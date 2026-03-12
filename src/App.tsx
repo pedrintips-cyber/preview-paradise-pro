@@ -8,6 +8,13 @@ import VideoDetail from "./pages/VideoDetail.tsx";
 import CategoryPage from "./pages/CategoryPage.tsx";
 import VipPage from "./pages/VipPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import AdminLogin from "./pages/admin/AdminLogin.tsx";
+import AdminLayout from "./pages/admin/AdminLayout.tsx";
+import AdminDashboard from "./pages/admin/AdminDashboard.tsx";
+import AdminBanners from "./pages/admin/AdminBanners.tsx";
+import AdminCategories from "./pages/admin/AdminCategories.tsx";
+import AdminVideos from "./pages/admin/AdminVideos.tsx";
+import AdminSettings from "./pages/admin/AdminSettings.tsx";
 
 const queryClient = new QueryClient();
 
@@ -22,6 +29,14 @@ const App = () => (
           <Route path="/video/:id" element={<VideoDetail />} />
           <Route path="/categoria/:slug" element={<CategoryPage />} />
           <Route path="/vip" element={<VipPage />} />
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="banners" element={<AdminBanners />} />
+            <Route path="categorias" element={<AdminCategories />} />
+            <Route path="videos" element={<AdminVideos />} />
+            <Route path="config" element={<AdminSettings />} />
+          </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
