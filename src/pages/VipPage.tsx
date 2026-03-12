@@ -1,162 +1,146 @@
-import { Crown, Check, Zap, Shield, Star } from "lucide-react";
+import { Crown, Check, Zap, Shield, Star, Play, Lock, Users, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 
-const plans = [
-  {
-    id: "monthly",
-    name: "Mensal",
-    price: "R$ 29,90",
-    period: "/mês",
-    features: [
-      "Acesso a todos os vídeos VIP",
-      "Sem anúncios",
-      "Qualidade HD",
-      "Cancele quando quiser",
-    ],
-    highlight: false,
-    icon: Zap,
-  },
-  {
-    id: "quarterly",
-    name: "Trimestral",
-    price: "R$ 69,90",
-    period: "/3 meses",
-    originalPrice: "R$ 89,70",
-    features: [
-      "Tudo do plano mensal",
-      "Economia de 22%",
-      "Acesso antecipado a lançamentos",
-      "Suporte prioritário",
-    ],
-    highlight: true,
-    icon: Crown,
-    badge: "MAIS POPULAR",
-  },
-  {
-    id: "annual",
-    name: "Anual",
-    price: "R$ 199,90",
-    period: "/ano",
-    originalPrice: "R$ 358,80",
-    features: [
-      "Tudo do plano trimestral",
-      "Economia de 44%",
-      "Conteúdo exclusivo anual",
-      "Badge VIP no perfil",
-      "Downloads offline",
-    ],
-    highlight: false,
-    icon: Shield,
-    badge: "MELHOR VALOR",
-  },
+const benefits = [
+  { icon: Play, text: "Acesso a todos os vídeos exclusivos" },
+  { icon: Zap, text: "Zero anúncios, experiência limpa" },
+  { icon: Shield, text: "Qualidade HD em todos os conteúdos" },
+  { icon: Star, text: "Lançamentos antecipados" },
+  { icon: Users, text: "Comunidade VIP exclusiva" },
+];
+
+const testimonials = [
+  { name: "Lucas M.", text: "Melhor investimento que fiz. Conteúdo incrível por um preço absurdo." },
+  { name: "Ana P.", text: "Não acredito que é só R$29,90 no ANO. Vale cada centavo!" },
+  { name: "Carlos R.", text: "Conteúdo de qualidade e sem enrolação. Recomendo demais." },
 ];
 
 const VipPage = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <main className="pt-20 pb-12 px-4 md:px-8">
-        {/* Hero */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center max-w-2xl mx-auto mb-10 md:mb-16"
-        >
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/30 text-primary text-sm font-medium mb-4">
-            <Crown className="w-4 h-4" />
-            Acesso VIP
-          </div>
-          <h1 className="text-3xl md:text-5xl lg:text-6xl font-display text-foreground mb-3">
-            DESBLOQUEIE TODO O{" "}
-            <span className="text-gradient-red">CONTEÚDO</span>
-          </h1>
-          <p className="text-sm md:text-base text-muted-foreground max-w-md mx-auto">
-            Assista a todos os vídeos exclusivos, sem limites e sem anúncios.
-            Escolha o plano ideal para você.
-          </p>
-        </motion.div>
-
-        {/* Plans */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 max-w-4xl mx-auto">
-          {plans.map((plan, i) => (
+      <main className="pt-14">
+        {/* Hero Section */}
+        <div className="relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-b from-primary/8 via-transparent to-transparent" />
+          <div className="absolute top-20 left-1/2 -translate-x-1/2 w-[300px] h-[300px] bg-primary/10 rounded-full blur-[100px]" />
+          
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="relative z-10 text-center px-4 pt-8 pb-6"
+          >
             <motion.div
-              key={plan.id}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.1 }}
-              className={`relative rounded-xl border p-5 md:p-6 flex flex-col ${
-                plan.highlight
-                  ? "border-primary bg-primary/5 shadow-glow scale-[1.02] md:scale-105"
-                  : "border-border bg-card"
-              }`}
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: "spring", delay: 0.1 }}
+              className="w-12 h-12 rounded-full bg-primary/15 border border-primary/30 flex items-center justify-center mx-auto mb-3"
             >
-              {plan.badge && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-primary text-primary-foreground text-[10px] md:text-xs font-bold tracking-wide">
-                  {plan.badge}
-                </span>
-              )}
-
-              <div className="flex items-center gap-2 mb-4">
-                <plan.icon className={`w-5 h-5 ${plan.highlight ? "text-primary" : "text-muted-foreground"}`} />
-                <h3 className="font-display text-xl text-foreground">{plan.name}</h3>
-              </div>
-
-              <div className="mb-4">
-                {plan.originalPrice && (
-                  <span className="text-sm text-muted-foreground line-through mr-2">
-                    {plan.originalPrice}
-                  </span>
-                )}
-                <span className="text-3xl md:text-4xl font-bold text-foreground">
-                  {plan.price}
-                </span>
-                <span className="text-sm text-muted-foreground">{plan.period}</span>
-              </div>
-
-              <ul className="space-y-2.5 mb-6 flex-1">
-                {plan.features.map((feat) => (
-                  <li key={feat} className="flex items-start gap-2 text-sm text-secondary-foreground">
-                    <Check className={`w-4 h-4 mt-0.5 flex-shrink-0 ${plan.highlight ? "text-primary" : "text-muted-foreground"}`} />
-                    {feat}
-                  </li>
-                ))}
-              </ul>
-
-              <Button
-                className={`w-full ${
-                  plan.highlight
-                    ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-glow"
-                    : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
-                }`}
-              >
-                <Crown className="w-4 h-4 mr-1.5" />
-                Assinar {plan.name}
-              </Button>
+              <Crown className="w-5 h-5 text-primary" />
             </motion.div>
-          ))}
+
+            <h1 className="text-2xl md:text-4xl font-display text-foreground mb-1.5 leading-tight">
+              SEJA <span className="text-primary">VIP</span> AGORA
+            </h1>
+            <p className="text-[11px] md:text-sm text-muted-foreground max-w-xs mx-auto leading-relaxed">
+              Desbloqueie todo o conteúdo exclusivo da plataforma por apenas
+            </p>
+
+            {/* Price highlight */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2 }}
+              className="mt-4 mb-5"
+            >
+              <div className="inline-block relative">
+                <span className="text-4xl md:text-5xl font-bold text-foreground">R$29,90</span>
+                <span className="text-sm text-muted-foreground ml-1">/ano</span>
+              </div>
+              <p className="text-[10px] text-muted-foreground mt-1">
+                Apenas R$2,49/mês • Menos que um café ☕
+              </p>
+            </motion.div>
+
+            <Link to="#">
+              <Button className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-glow px-8 py-2.5 text-sm font-semibold w-full max-w-[260px]">
+                <Lock className="w-3.5 h-3.5 mr-1.5" />
+                Desbloquear VIP — R$29,90/ano
+              </Button>
+            </Link>
+            <p className="text-[9px] text-muted-foreground mt-2">
+              Cancele quando quiser • Pagamento seguro
+            </p>
+          </motion.div>
         </div>
 
-        {/* Trust badges */}
+        {/* Benefits */}
+        <div className="px-4 md:px-8 py-5">
+          <h2 className="text-base md:text-xl font-display text-foreground text-center mb-4">
+            O QUE VOCÊ GANHA
+          </h2>
+          <div className="max-w-md mx-auto space-y-2">
+            {benefits.map((b, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, x: -15 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.1 + i * 0.06 }}
+                className="flex items-center gap-2.5 p-2.5 rounded-lg bg-card border border-border"
+              >
+                <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                  <b.icon className="w-3.5 h-3.5 text-primary" />
+                </div>
+                <span className="text-xs text-secondary-foreground">{b.text}</span>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+        {/* Social proof */}
+        <div className="px-4 md:px-8 py-5 border-t border-border">
+          <div className="flex items-center justify-center gap-1.5 mb-4">
+            {[...Array(5)].map((_, i) => (
+              <Star key={i} className="w-3.5 h-3.5 fill-primary text-primary" />
+            ))}
+            <span className="text-[10px] text-muted-foreground ml-1">4.9/5 • +10.000 membros</span>
+          </div>
+          <div className="max-w-md mx-auto space-y-2">
+            {testimonials.map((t, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4 + i * 0.1 }}
+                className="p-3 rounded-lg bg-card border border-border"
+              >
+                <p className="text-[11px] text-muted-foreground italic mb-1">"{t.text}"</p>
+                <p className="text-[10px] text-primary font-medium">— {t.name}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+        {/* Final CTA */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          className="flex flex-wrap items-center justify-center gap-6 mt-10 text-muted-foreground text-xs md:text-sm"
+          transition={{ delay: 0.7 }}
+          className="text-center px-4 py-6 border-t border-border"
         >
-          <span className="flex items-center gap-1.5">
-            <Shield className="w-4 h-4" />
-            Pagamento seguro
-          </span>
-          <span className="flex items-center gap-1.5">
-            <Star className="w-4 h-4" />
-            +10.000 assinantes
-          </span>
-          <span className="flex items-center gap-1.5">
-            <Zap className="w-4 h-4" />
-            Cancele quando quiser
-          </span>
+          <p className="text-xs text-muted-foreground mb-3">
+            Não perca mais tempo. Comece a assistir agora.
+          </p>
+          <Link to="#">
+            <Button className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-glow px-6 py-2 text-xs font-semibold">
+              <Crown className="w-3.5 h-3.5 mr-1.5" />
+              Quero ser VIP — R$29,90/ano
+              <ChevronRight className="w-3.5 h-3.5 ml-1" />
+            </Button>
+          </Link>
         </motion.div>
       </main>
     </div>

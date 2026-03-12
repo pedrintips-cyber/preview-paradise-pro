@@ -11,7 +11,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <main className="pt-16">
+      <main className="pt-11 md:pt-14">
         <HeroBanner />
         <CategoryBar />
         <VideoGrid videos={freeVideos} title="Vídeos Gratuitos" />
