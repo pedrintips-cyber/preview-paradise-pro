@@ -314,6 +314,7 @@ export type Database = {
       }
       purchases: {
         Row: {
+          affiliate_id: string | null
           amount: number
           created_at: string | null
           customer_document: string
@@ -331,6 +332,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          affiliate_id?: string | null
           amount: number
           created_at?: string | null
           customer_document: string
@@ -348,6 +350,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          affiliate_id?: string | null
           amount?: number
           created_at?: string | null
           customer_document?: string
@@ -365,6 +368,13 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "purchases_affiliate_id_fkey"
+            columns: ["affiliate_id"]
+            isOneToOne: false
+            referencedRelation: "affiliates"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "purchases_plan_id_fkey"
             columns: ["plan_id"]
