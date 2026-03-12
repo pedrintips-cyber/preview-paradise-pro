@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { Crown, ArrowLeft, Copy, Check, Clock, QrCode, ShieldCheck } from "lucide-react";
 import { motion } from "framer-motion";
@@ -16,11 +16,32 @@ interface Plan {
   banner_url: string | null;
 }
 
+interface PixPayment {
+  id: "affiliate" | "owner" | "single";
+  label: string;
+  amount: number;
+  qr_code: string;
+  qr_code_base64: string;
+  expires_at: string;
+}
+
+interface PixData {
+  purchase_id: string;
+  qr_code: string;
+  qr_code_base64: string;
+  expires_at: string;
+  amount: number;
+  split?: boolean;
+  pix_payments?: PixPayment[];
+}
+
 const periodLabel = (p: string) => {
   if (p === "mensal") return "/mês";
   if (p === "trimestral") return "/trimestre";
   return "/ano";
 };
+
+const formatCurrencyFromCents = (value: number) => `R$${(Number(value) / 100).toFixed(2).replace(".", ",")}`;
 
 const CheckoutPage = () => {
   const { planId } = useParams();
@@ -30,23 +51,15 @@ const CheckoutPage = () => {
   const [plan, setPlan] = useState<Plan | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
-  // Form
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [document, setDocument] = useState("");
   const [phone, setPhone] = useState("");
 
-  // PIX result
-  const [pixData, setPixData] = useState<{
-    purchase_id: string;
-    qr_code: string;
-    qr_code_base64: string;
-    expires_at: string;
-  } | null>(null);
+  const [pixData, setPixData] = useState<PixData | null>(null);
 
-  // Payment status
   const [paymentStatus, setPaymentStatus] = useState<string>("pending");
 
   useEffect(() => {
@@ -65,7 +78,6 @@ const CheckoutPage = () => {
     loadPlan();
   }, [planId, navigate]);
 
-  // Realtime subscription for payment status
   useEffect(() => {
     if (!pixData?.purchase_id) return;
 
@@ -124,7 +136,6 @@ const CheckoutPage = () => {
 
       setPixData(data);
 
-      // Track VIP click
       await supabase.from("analytics").insert({ event_type: "vip_click", metadata: { plan_id: plan.id } });
     } catch (err: unknown) {
       console.error("Checkout error:", err);
@@ -138,13 +149,41 @@ const CheckoutPage = () => {
     }
   };
 
-  const copyPixCode = async () => {
-    if (!pixData?.qr_code) return;
-    await navigator.clipboard.writeText(pixData.qr_code);
-    setCopied(true);
+  const copyPixCode = async (pixCode: string, key: string) => {
+    await navigator.clipboard.writeText(pixCode);
+    setCopiedKey(key);
     toast({ title: "Código PIX copiado!" });
-    setTimeout(() => setCopied(false), 3000);
+    setTimeout(() => setCopiedKey((current) => (current === key ? null : current)), 2500);
   };
+
+  const payments = useMemo(() => {
+    if (!pixData) return [];
+
+    if (pixData.split && pixData.pix_payments?.length) {
+      return pixData.pix_payments;
+    }
+
+    return [
+      {
+        id: "single" as const,
+        label: "Pagamento",
+        amount: pixData.amount,
+        qr_code: pixData.qr_code,
+        qr_code_base64: pixData.qr_code_base64,
+        expires_at: pixData.expires_at,
+      },
+    ];
+  }, [pixData]);
+
+  const affiliatePaid = paymentStatus === "split_affiliate_paid" || paymentStatus === "approved";
+  const ownerPaid = paymentStatus === "split_owner_paid" || paymentStatus === "approved";
+
+  const splitProgressText =
+    paymentStatus === "split_affiliate_paid"
+      ? "Pagamento 1/2 confirmado. Falta pagar o PIX da plataforma (20%)."
+      : paymentStatus === "split_owner_paid"
+      ? "Pagamento 1/2 confirmado. Falta pagar o PIX do afiliado (80%)."
+      : "Pague os dois PIX para concluir a compra VIP.";
 
   if (loading) {
     return (
@@ -163,7 +202,6 @@ const CheckoutPage = () => {
             <ArrowLeft className="w-3.5 h-3.5" /> Voltar aos planos
           </Link>
 
-          {/* Plan summary */}
           {plan && (
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="rounded-xl border border-primary/20 bg-card overflow-hidden mb-5">
               {plan.banner_url && <img src={plan.banner_url} alt={plan.name} className="w-full h-28 object-cover" />}
@@ -179,7 +217,6 @@ const CheckoutPage = () => {
             </motion.div>
           )}
 
-          {/* Show form or PIX */}
           {!pixData ? (
             <motion.form initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} onSubmit={handleSubmit} className="space-y-4">
               <div className="rounded-xl border border-border bg-card p-4 space-y-3">
@@ -206,15 +243,17 @@ const CheckoutPage = () => {
 
               <Button type="submit" disabled={submitting} className="w-full bg-primary text-primary-foreground hover:bg-primary/90 shadow-glow text-sm h-10 font-semibold">
                 {submitting ? (
-                  <><div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin mr-2" /> Gerando PIX...</>
+                  <>
+                    <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin mr-2" /> Gerando PIX...
+                  </>
                 ) : (
-                  <><QrCode className="w-4 h-4 mr-2" /> Gerar PIX</>
+                  <>
+                    <QrCode className="w-4 h-4 mr-2" /> Gerar PIX
+                  </>
                 )}
               </Button>
 
-              <p className="text-[9px] text-muted-foreground text-center">
-                Pagamento 100% seguro via PIX • Acesso imediato após confirmação
-              </p>
+              <p className="text-[9px] text-muted-foreground text-center">Pagamento 100% seguro via PIX • Acesso imediato após confirmação</p>
             </motion.form>
           ) : (
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="space-y-4">
@@ -226,45 +265,78 @@ const CheckoutPage = () => {
                   <h2 className="text-lg font-display text-foreground mb-1">Pagamento Confirmado!</h2>
                   <p className="text-xs text-muted-foreground mb-4">Seu acesso VIP foi ativado com sucesso.</p>
                   <Link to="/">
-                    <Button className="bg-primary text-primary-foreground hover:bg-primary/90 text-sm">
-                      Acessar Conteúdo VIP
-                    </Button>
+                    <Button className="bg-primary text-primary-foreground hover:bg-primary/90 text-sm">Acessar Conteúdo VIP</Button>
                   </Link>
                 </div>
               ) : (
                 <>
                   <div className="rounded-xl border border-primary/20 bg-card p-4 text-center">
-                    <div className="flex items-center justify-center gap-1.5 mb-3">
+                    <div className="flex items-center justify-center gap-1.5 mb-2">
                       <Clock className="w-4 h-4 text-primary animate-pulse" />
                       <span className="text-xs text-primary font-medium">Aguardando pagamento...</span>
                     </div>
 
-                    {pixData.qr_code_base64 && (
-                      <div className="bg-white rounded-lg p-3 inline-block mb-3">
-                        <img src={pixData.qr_code_base64} alt="QR Code PIX" className="w-48 h-48 mx-auto" />
-                      </div>
+                    {pixData.split ? (
+                      <p className="text-[10px] text-muted-foreground mb-3">{splitProgressText}</p>
+                    ) : (
+                      <p className="text-[10px] text-muted-foreground mb-3">Escaneie o QR Code abaixo ou copie o código PIX</p>
                     )}
 
-                    <p className="text-[10px] text-muted-foreground mb-3">
-                      Escaneie o QR Code acima ou copie o código PIX abaixo
-                    </p>
+                    <div className="space-y-3">
+                      {payments.map((payment) => {
+                        const isPaid =
+                          payment.id === "affiliate"
+                            ? affiliatePaid
+                            : payment.id === "owner"
+                            ? ownerPaid
+                            : paymentStatus === "approved";
 
-                    <div className="bg-secondary rounded-lg p-2.5 mb-3">
-                      <p className="text-[9px] text-muted-foreground break-all font-mono leading-relaxed max-h-16 overflow-y-auto">
-                        {pixData.qr_code}
-                      </p>
+                        return (
+                          <div key={payment.id} className={`rounded-lg border p-3 ${isPaid ? "border-primary/40 bg-primary/10" : "border-border bg-secondary/40"}`}>
+                            <div className="flex items-center justify-between gap-2 mb-2">
+                              <p className="text-[11px] font-medium text-foreground text-left">{payment.label}</p>
+                              <div className="flex items-center gap-1 text-[10px] font-semibold text-primary">
+                                {isPaid ? <Check className="w-3.5 h-3.5" /> : null}
+                                <span>{formatCurrencyFromCents(payment.amount)}</span>
+                              </div>
+                            </div>
+
+                            {payment.qr_code_base64 && (
+                              <div className="bg-background rounded-lg p-2 inline-block mb-2">
+                                <img src={payment.qr_code_base64} alt={`QR Code PIX ${payment.label}`} className="w-40 h-40 mx-auto" />
+                              </div>
+                            )}
+
+                            <div className="bg-background rounded-lg p-2 mb-2">
+                              <p className="text-[9px] text-muted-foreground break-all font-mono leading-relaxed max-h-16 overflow-y-auto">{payment.qr_code}</p>
+                            </div>
+
+                            <Button
+                              onClick={() => copyPixCode(payment.qr_code, payment.id)}
+                              variant="outline"
+                              className="w-full border-primary/30 text-primary hover:bg-primary/10 text-xs h-8"
+                            >
+                              {copiedKey === payment.id ? (
+                                <>
+                                  <Check className="w-3.5 h-3.5 mr-1.5" /> Copiado!
+                                </>
+                              ) : (
+                                <>
+                                  <Copy className="w-3.5 h-3.5 mr-1.5" /> Copiar código PIX
+                                </>
+                              )}
+                            </Button>
+
+                            {payment.expires_at && (
+                              <p className="text-[9px] text-muted-foreground mt-2 text-center">
+                                Expira em: {new Date(payment.expires_at).toLocaleString("pt-BR")}
+                              </p>
+                            )}
+                          </div>
+                        );
+                      })}
                     </div>
-
-                    <Button onClick={copyPixCode} variant="outline" className="w-full border-primary/30 text-primary hover:bg-primary/10 text-sm h-9">
-                      {copied ? <><Check className="w-4 h-4 mr-1.5" /> Copiado!</> : <><Copy className="w-4 h-4 mr-1.5" /> Copiar código PIX</>}
-                    </Button>
                   </div>
-
-                  {pixData.expires_at && (
-                    <p className="text-[9px] text-muted-foreground text-center">
-                      Este PIX expira em: {new Date(pixData.expires_at).toLocaleString("pt-BR")}
-                    </p>
-                  )}
                 </>
               )}
             </motion.div>

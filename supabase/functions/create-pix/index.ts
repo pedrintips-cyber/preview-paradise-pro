@@ -9,6 +9,61 @@ const corsHeaders = {
 
 const PARADISE_API_URL = "https://multi.paradisepags.com/api/v1/transaction.php";
 
+type CustomerPayload = {
+  name: string;
+  email: string;
+  document: string;
+  phone: string;
+};
+
+type ParadisePixResponse = {
+  qr_code: string;
+  qr_code_base64: string;
+  transaction_id: string | number;
+  expires_at: string;
+};
+
+const createParadisePix = async (params: {
+  apiKey: string;
+  amount: number;
+  description: string;
+  reference: string;
+  customer: CustomerPayload;
+  productHash?: string;
+}): Promise<ParadisePixResponse> => {
+  const { apiKey, amount, description, reference, customer, productHash } = params;
+
+  const payload: Record<string, unknown> = {
+    amount,
+    description,
+    reference,
+    customer,
+  };
+
+  if (productHash) payload.productHash = productHash;
+  else payload.source = "api_externa";
+
+  const paradiseRes = await fetch(PARADISE_API_URL, {
+    method: "POST",
+    headers: { "X-API-Key": apiKey, "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+
+  const paradiseData = await paradiseRes.json();
+
+  if (!paradiseRes.ok || paradiseData.status !== "success") {
+    console.error("Paradise API error:", paradiseData);
+    throw new Error("Erro ao gerar PIX");
+  }
+
+  return {
+    qr_code: paradiseData.qr_code,
+    qr_code_base64: paradiseData.qr_code_base64,
+    transaction_id: paradiseData.transaction_id,
+    expires_at: paradiseData.expires_at,
+  };
+};
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -34,7 +89,6 @@ serve(async (req) => {
       );
     }
 
-    // Fetch plan
     const { data: plan, error: planErr } = await supabase
       .from("vip_plans")
       .select("*")
@@ -43,17 +97,15 @@ serve(async (req) => {
       .single();
 
     if (planErr || !plan) {
-      return new Response(
-        JSON.stringify({ error: "Plano não encontrado ou inativo" }),
-        { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return new Response(JSON.stringify({ error: "Plano não encontrado ou inativo" }), {
+        status: 404,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     const totalAmountCents = Math.round(Number(plan.price) * 100);
     const reference = `VIP-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
-    // Check if affiliate has their own gateway
-    let affiliateGatewayToken: string | null = null;
     let affiliateData: { id: string; gateway_token: string | null; commission_rate: number } | null = null;
 
     if (affiliate_id) {
@@ -64,62 +116,96 @@ serve(async (req) => {
         .eq("status", "active")
         .single();
 
-      if (aff) {
-        affiliateData = aff;
-        if (aff.gateway_token) {
-          affiliateGatewayToken = aff.gateway_token;
-        }
-      }
+      if (aff) affiliateData = aff;
     }
 
-    const customerData = {
+    const customerData: CustomerPayload = {
       name: customer.name,
       email: customer.email,
       document: customer.document.replace(/\D/g, ""),
       phone: customer.phone.replace(/\D/g, ""),
     };
 
-    let pixResult: any;
-    // Determine which API key to use for the FULL charge
-    const chargeApiKey = affiliateGatewayToken || OWNER_API_KEY;
-    const isAffiliateSplit = !!affiliateGatewayToken;
+    const hasAffiliateSplit = Boolean(affiliateData?.gateway_token);
 
-    console.log(`Payment: total=${totalAmountCents}, affiliate_split=${isAffiliateSplit}, affiliate_id=${affiliate_id || 'none'}`);
+    console.log(
+      `Payment: total=${totalAmountCents}, split=${hasAffiliateSplit}, affiliate_id=${affiliateData?.id || "none"}`
+    );
 
-    // Always charge the FULL amount - on affiliate gateway if they have one, otherwise on owner gateway
-    const paradiseBody: Record<string, unknown> = {
-      amount: totalAmountCents,
-      description: `Plano VIP ${plan.name}`,
-      reference,
-      customer: customerData,
-    };
-    if (productHash) paradiseBody.productHash = productHash;
-    else paradiseBody.source = "api_externa";
+    let responsePayload: Record<string, unknown>;
+    let primaryPix: ParadisePixResponse;
+    let paradiseTransactionId: string;
 
-    const paradiseRes = await fetch(PARADISE_API_URL, {
-      method: "POST",
-      headers: { "X-API-Key": chargeApiKey, "Content-Type": "application/json" },
-      body: JSON.stringify(paradiseBody),
-    });
-    const paradiseData = await paradiseRes.json();
+    if (hasAffiliateSplit && affiliateData?.gateway_token) {
+      const affiliateAmountCents = Math.round(totalAmountCents * 0.8);
+      const ownerAmountCents = totalAmountCents - affiliateAmountCents;
 
-    if (!paradiseRes.ok || paradiseData.status !== "success") {
-      console.error("Paradise API error:", paradiseData);
-      return new Response(
-        JSON.stringify({ error: "Erro ao gerar PIX", details: paradiseData }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      const affiliateReference = `${reference}-AFF`;
+      const ownerReference = `${reference}-OWN`;
+
+      const [affiliatePix, ownerPix] = await Promise.all([
+        createParadisePix({
+          apiKey: affiliateData.gateway_token,
+          amount: affiliateAmountCents,
+          description: `Plano VIP ${plan.name} • Afiliado 80%`,
+          reference: affiliateReference,
+          customer: customerData,
+          productHash,
+        }),
+        createParadisePix({
+          apiKey: OWNER_API_KEY,
+          amount: ownerAmountCents,
+          description: `Plano VIP ${plan.name} • Plataforma 20%`,
+          reference: ownerReference,
+          customer: customerData,
+          productHash,
+        }),
+      ]);
+
+      primaryPix = affiliatePix;
+      paradiseTransactionId = `${affiliatePix.transaction_id}|${ownerPix.transaction_id}`;
+
+      responsePayload = {
+        split: true,
+        pix_payments: [
+          {
+            id: "affiliate",
+            label: "Pagamento 1 de 2 • Afiliado (80%)",
+            amount: affiliateAmountCents,
+            qr_code: affiliatePix.qr_code,
+            qr_code_base64: affiliatePix.qr_code_base64,
+            expires_at: affiliatePix.expires_at,
+            reference: affiliateReference,
+          },
+          {
+            id: "owner",
+            label: "Pagamento 2 de 2 • Plataforma (20%)",
+            amount: ownerAmountCents,
+            qr_code: ownerPix.qr_code,
+            qr_code_base64: ownerPix.qr_code_base64,
+            expires_at: ownerPix.expires_at,
+            reference: ownerReference,
+          },
+        ],
+      };
+    } else {
+      const singlePix = await createParadisePix({
+        apiKey: OWNER_API_KEY,
+        amount: totalAmountCents,
+        description: `Plano VIP ${plan.name}`,
+        reference,
+        customer: customerData,
+        productHash,
+      });
+
+      primaryPix = singlePix;
+      paradiseTransactionId = String(singlePix.transaction_id);
+
+      responsePayload = {
+        split: false,
+      };
     }
 
-    pixResult = {
-      qr_code: paradiseData.qr_code,
-      qr_code_base64: paradiseData.qr_code_base64,
-      transaction_id: paradiseData.transaction_id,
-      expires_at: paradiseData.expires_at,
-      split: isAffiliateSplit,
-    };
-
-    // Save purchase in DB
     const { data: purchase, error: insertErr } = await supabase
       .from("purchases")
       .insert({
@@ -130,12 +216,12 @@ serve(async (req) => {
         customer_phone: customer.phone.replace(/\D/g, ""),
         amount: totalAmountCents,
         status: "pending",
-        paradise_transaction_id: String(pixResult.transaction_id),
+        paradise_transaction_id: paradiseTransactionId,
         paradise_reference: reference,
-        qr_code: pixResult.qr_code,
-        qr_code_base64: pixResult.qr_code_base64,
-        expires_at: pixResult.expires_at,
-        affiliate_id: affiliate_id || null,
+        qr_code: primaryPix.qr_code,
+        qr_code_base64: primaryPix.qr_code_base64,
+        expires_at: primaryPix.expires_at,
+        affiliate_id: affiliateData?.id || null,
       })
       .select()
       .single();
@@ -145,25 +231,25 @@ serve(async (req) => {
       throw new Error("Erro ao salvar compra");
     }
 
-    // Track analytics
     await supabase.from("analytics").insert({ event_type: "purchase", metadata: { plan_id, plan_name: plan.name } });
 
     return new Response(
       JSON.stringify({
         purchase_id: purchase.id,
-        qr_code: pixResult.qr_code,
-        qr_code_base64: pixResult.qr_code_base64,
+        qr_code: primaryPix.qr_code,
+        qr_code_base64: primaryPix.qr_code_base64,
         amount: totalAmountCents,
-        expires_at: pixResult.expires_at,
+        expires_at: primaryPix.expires_at,
+        ...responsePayload,
       }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {
     console.error("Error:", error);
     const message = error instanceof Error ? error.message : "Erro interno";
-    return new Response(
-      JSON.stringify({ error: message }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return new Response(JSON.stringify({ error: message }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 });
