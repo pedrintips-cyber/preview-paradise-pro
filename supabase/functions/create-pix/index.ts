@@ -25,7 +25,7 @@ serve(async (req) => {
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
     const body = await req.json();
-    const { plan_id, customer, productHash } = body;
+    const { plan_id, customer, productHash, affiliate_id } = body;
 
     if (!plan_id || !customer?.name || !customer?.email || !customer?.document || !customer?.phone) {
       return new Response(
@@ -106,6 +106,7 @@ serve(async (req) => {
         qr_code: paradiseData.qr_code,
         qr_code_base64: paradiseData.qr_code_base64,
         expires_at: paradiseData.expires_at,
+        affiliate_id: affiliate_id || null,
       })
       .select()
       .single();

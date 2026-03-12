@@ -51,6 +51,49 @@ serve(async (req) => {
       );
     }
 
+    // If approved, handle affiliate commission
+    if (status === "approved") {
+      let purchaseQuery = supabase.from("purchases").select("id, affiliate_id, amount, plan_id");
+      if (external_id) {
+        purchaseQuery = purchaseQuery.eq("paradise_reference", external_id);
+      } else {
+        purchaseQuery = purchaseQuery.eq("paradise_transaction_id", String(transaction_id));
+      }
+      const { data: purchase } = await purchaseQuery.single();
+
+      if (purchase?.affiliate_id) {
+        // Get affiliate commission rate
+        const { data: affiliate } = await supabase
+          .from("affiliates")
+          .select("id, commission_rate, balance, total_earned")
+          .eq("id", purchase.affiliate_id)
+          .single();
+
+        if (affiliate) {
+          const saleAmount = purchase.amount / 100;
+          const commissionAmount = saleAmount * (Number(affiliate.commission_rate) / 100);
+
+          // Create affiliate sale record
+          await supabase.from("affiliate_sales").insert({
+            affiliate_id: affiliate.id,
+            purchase_id: purchase.id,
+            plan_id: purchase.plan_id,
+            sale_amount: saleAmount,
+            commission_amount: commissionAmount,
+            status: "approved",
+          });
+
+          // Update affiliate balance
+          await supabase.from("affiliates").update({
+            balance: Number(affiliate.balance) + commissionAmount,
+            total_earned: Number(affiliate.total_earned) + commissionAmount,
+          }).eq("id", affiliate.id);
+
+          console.log(`Affiliate ${affiliate.id} earned ${commissionAmount} from purchase ${purchase.id}`);
+        }
+      }
+    }
+
     console.log(`Purchase updated: ${external_id || transaction_id} -> ${status}`);
 
     return new Response(JSON.stringify({ success: true }), {
