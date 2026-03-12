@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Eye, ShoppingCart, DollarSign, TrendingUp, MousePointerClick } from "lucide-react";
+import { ShoppingCart, TrendingUp, MousePointerClick, Zap } from "lucide-react";
 import type { Affiliate } from "./AffiliateLayout";
 
 const AffiliateDashboard = () => {
@@ -10,7 +10,6 @@ const AffiliateDashboard = () => {
     totalClicks: 0,
     totalSales: 0,
     totalEarned: 0,
-    pendingBalance: 0,
     todayClicks: 0,
     todaySales: 0,
   });
@@ -35,7 +34,6 @@ const AffiliateDashboard = () => {
         totalClicks: clicksRes.count || 0,
         totalSales: salesRes.data?.length || 0,
         totalEarned,
-        pendingBalance: Number(affiliate.balance),
         todayClicks: todayClicksRes.count || 0,
         todaySales: todaySalesRes.count || 0,
       });
@@ -44,11 +42,13 @@ const AffiliateDashboard = () => {
     load();
   }, [affiliate]);
 
+  const hasGateway = !!affiliate.gateway_token;
+
   const cards = [
     { label: "Cliques Totais", value: stats.totalClicks, icon: MousePointerClick, sub: `Hoje: ${stats.todayClicks}` },
     { label: "Vendas", value: stats.totalSales, icon: ShoppingCart, sub: `Hoje: ${stats.todaySales}` },
-    { label: "Total Ganho", value: `R$${stats.totalEarned.toFixed(2).replace(".", ",")}`, icon: TrendingUp, sub: `Comissão: ${affiliate.commission_rate}%` },
-    { label: "Saldo Disponível", value: `R$${stats.pendingBalance.toFixed(2).replace(".", ",")}`, icon: DollarSign, sub: "Para saque" },
+    { label: "Total Recebido", value: `R$${stats.totalEarned.toFixed(2).replace(".", ",")}`, icon: TrendingUp, sub: hasGateway ? "Direto no gateway" : `Comissão: ${affiliate.commission_rate}%` },
+    { label: "Gateway", value: hasGateway ? "Ativo" : "Inativo", icon: Zap, sub: hasGateway ? "80% direto p/ você" : "Conecte seu gateway" },
   ];
 
   return (

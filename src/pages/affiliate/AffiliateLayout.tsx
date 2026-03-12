@@ -3,7 +3,7 @@ import { Outlet, useNavigate, Link, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import {
   LayoutDashboard, Link2, ShoppingCart, History,
-  Wallet, ArrowDownToLine, Settings, MessageCircle,
+  Wallet, Settings, MessageCircle,
   LogOut, Menu, X, CreditCard
 } from "lucide-react";
 
@@ -27,7 +27,6 @@ const navItems = [
   { label: "Meu Link", icon: Link2, path: "/afiliado/link" },
   { label: "Vendas", icon: ShoppingCart, path: "/afiliado/vendas" },
   { label: "Histórico", icon: History, path: "/afiliado/historico" },
-  { label: "Saques", icon: ArrowDownToLine, path: "/afiliado/saques" },
   { label: "Carteira", icon: Wallet, path: "/afiliado/carteira" },
   { label: "Gateway", icon: CreditCard, path: "/afiliado/gateway" },
   { label: "Configurações", icon: Settings, path: "/afiliado/config" },
