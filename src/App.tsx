@@ -23,7 +23,7 @@ import AffiliateDashboard from "./pages/affiliate/AffiliateDashboard.tsx";
 import AffiliateLink from "./pages/affiliate/AffiliateLink.tsx";
 import AffiliateSales from "./pages/affiliate/AffiliateSales.tsx";
 import AffiliateHistory from "./pages/affiliate/AffiliateHistory.tsx";
-import AffiliateWithdrawals from "./pages/affiliate/AffiliateWithdrawals.tsx";
+
 import AffiliateWallet from "./pages/affiliate/AffiliateWallet.tsx";
 import AffiliateGateway from "./pages/affiliate/AffiliateGateway.tsx";
 import AffiliateSettings from "./pages/affiliate/AffiliateSettings.tsx";
