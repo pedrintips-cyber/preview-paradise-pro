@@ -217,9 +217,9 @@ const CheckoutPage = () => {
           ) : (
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="space-y-4">
               {paymentStatus === "approved" ? (
-                <div className="rounded-xl border border-green-500/30 bg-green-500/10 p-6 text-center">
-                  <div className="w-16 h-16 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-3">
-                    <Check className="w-8 h-8 text-green-500" />
+                <div className="rounded-xl border border-primary/30 bg-primary/10 p-6 text-center">
+                  <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-3">
+                    <Check className="w-8 h-8 text-primary" />
                   </div>
                   <h2 className="text-lg font-display text-foreground mb-1">Pagamento Confirmado!</h2>
                   <p className="text-xs text-muted-foreground mb-4">Seu acesso VIP foi ativado com sucesso.</p>
