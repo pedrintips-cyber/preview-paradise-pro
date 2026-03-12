@@ -21,18 +21,17 @@ const AffiliateLogin = () => {
 
   const handleLogin = async () => {
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data: signInData, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
       toast({ title: "Erro ao entrar", description: error.message, variant: "destructive" });
       setLoading(false);
       return;
     }
 
-    // Check if user is an affiliate
     const { data: affiliate } = await supabase
       .from("affiliates")
       .select("id")
-      .eq("user_id", (await supabase.auth.getUser()).data.user?.id ?? "")
+      .eq("user_id", signInData.user?.id ?? "")
       .maybeSingle();
 
     if (!affiliate) {
@@ -51,6 +50,7 @@ const AffiliateLogin = () => {
       toast({ title: "Preencha todos os campos", variant: "destructive" });
       return;
     }
+
     setLoading(true);
 
     try {
@@ -59,17 +59,24 @@ const AffiliateLogin = () => {
       });
 
       if (res.error) throw new Error(res.error.message);
-      const data = res.data;
-      if (data.error) throw new Error(data.error);
+      const data = res.data as { error?: string; already_exists?: boolean; message?: string };
+      if (data?.error) throw new Error(data.error);
 
-      toast({ title: "Conta criada!", description: "Verifique seu email para confirmar o cadastro." });
+      toast({
+        title: data?.already_exists ? "Email já cadastrado" : "Conta criada!",
+        description: data?.message || "Verifique seu email para confirmar o cadastro.",
+      });
+
       setIsLogin(true);
     } catch (err: unknown) {
-      toast({ title: "Erro no cadastro", description: err instanceof Error ? err.message : "Tente novamente", variant: "destructive" });
+      toast({
+        title: "Erro no cadastro",
+        description: err instanceof Error ? err.message : "Tente novamente",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
