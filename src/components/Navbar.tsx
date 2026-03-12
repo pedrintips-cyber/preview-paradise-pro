@@ -10,7 +10,7 @@ const Navbar = () => {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-xl border-b border-border">
-      <div className="flex items-center justify-between px-3 md:px-8 h-12 md:h-14">
+      <div className="flex items-center justify-between px-3 md:px-8 h-16 md:h-24">
         <Link to="/" className="flex items-center">
           <img src={logo} alt="Hentai Vazados" className="h-14 md:h-20 object-contain" />
         </Link>
