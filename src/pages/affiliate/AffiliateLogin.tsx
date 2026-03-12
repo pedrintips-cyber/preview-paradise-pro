@@ -16,14 +16,8 @@ const AffiliateLogin = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const generateSlug = (name: string) => {
-    return name
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-|-$/g, "") + "-" + Math.random().toString(36).substring(2, 6);
-  };
+
+
 
   const handleLogin = async () => {
     setLoading(true);
@@ -59,36 +53,22 @@ const AffiliateLogin = () => {
     }
     setLoading(true);
 
-    const { data: authData, error: authError } = await supabase.auth.signUp({ email, password });
-    if (authError) {
-      toast({ title: "Erro no cadastro", description: authError.message, variant: "destructive" });
+    try {
+      const res = await supabase.functions.invoke("create-affiliate", {
+        body: { email: email.trim(), password, name: name.trim(), phone: phone.trim() || null },
+      });
+
+      if (res.error) throw new Error(res.error.message);
+      const data = res.data;
+      if (data.error) throw new Error(data.error);
+
+      toast({ title: "Conta criada!", description: "Verifique seu email para confirmar o cadastro." });
+      setIsLogin(true);
+    } catch (err: unknown) {
+      toast({ title: "Erro no cadastro", description: err instanceof Error ? err.message : "Tente novamente", variant: "destructive" });
+    } finally {
       setLoading(false);
-      return;
     }
-
-    if (!authData.user) {
-      toast({ title: "Verifique seu email", description: "Enviamos um link de confirmação." });
-      setLoading(false);
-      return;
-    }
-
-    // Create affiliate profile
-    const { error: affError } = await supabase.from("affiliates").insert({
-      user_id: authData.user.id,
-      name: name.trim(),
-      email: email.trim(),
-      phone: phone.trim() || null,
-      slug: generateSlug(name),
-    });
-
-    if (affError) {
-      toast({ title: "Erro ao criar perfil", description: affError.message, variant: "destructive" });
-      setLoading(false);
-      return;
-    }
-
-    toast({ title: "Conta criada!", description: "Verifique seu email para confirmar o cadastro." });
-    setIsLogin(true);
     setLoading(false);
   };
 
