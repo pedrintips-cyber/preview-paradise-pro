@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Outlet, useNavigate, useLocation, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { LayoutDashboard, Image, FolderOpen, Video, Settings, LogOut, Crown, Menu, X } from "lucide-react";
+import { LayoutDashboard, Image, FolderOpen, Video, Settings, LogOut, Crown, Menu, X, Users } from "lucide-react";
 
 const navItems = [
   { label: "Dashboard", icon: LayoutDashboard, path: "/admin" },
@@ -9,6 +9,7 @@ const navItems = [
   { label: "Categorias", icon: FolderOpen, path: "/admin/categorias" },
   { label: "Vídeos", icon: Video, path: "/admin/videos" },
   { label: "Planos VIP", icon: Crown, path: "/admin/vip" },
+  { label: "Afiliados", icon: Users, path: "/admin/afiliados" },
   { label: "Configurações", icon: Settings, path: "/admin/config" },
 ];
 

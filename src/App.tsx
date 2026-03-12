@@ -52,6 +52,7 @@ const App = () => (
             <Route path="categorias" element={<AdminCategories />} />
             <Route path="videos" element={<AdminVideos />} />
             <Route path="vip" element={<AdminVipPlans />} />
+            <Route path="afiliados" element={<AdminAffiliates />} />
             <Route path="config" element={<AdminSettings />} />
           </Route>
           <Route path="/afiliado/login" element={<AffiliateLogin />} />
