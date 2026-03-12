@@ -20,7 +20,7 @@ const HeroBanner = () => {
   const banner = banners[current];
 
   return (
-    <div className="relative w-full h-[70vh] min-h-[400px] overflow-hidden">
+    <div className="relative w-full h-[45vh] md:h-[70vh] min-h-[250px] md:min-h-[400px] overflow-hidden">
       <AnimatePresence mode="wait">
         <motion.div
           key={banner.id}
