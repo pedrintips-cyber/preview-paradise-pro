@@ -22,7 +22,7 @@ const VideoCard = ({ video, index = 0 }: VideoCardProps) => {
     >
       <Link to={`/video/${video.id}`} className="group block">
         <div className="relative rounded-lg overflow-hidden bg-card border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-glow">
-          <div className="relative aspect-[2/3] overflow-hidden">
+          <div className="relative aspect-video overflow-hidden">
             <img
               src={video.thumbnail}
               alt={video.title}

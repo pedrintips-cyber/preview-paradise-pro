@@ -55,7 +55,7 @@ const HeroBanner = () => {
                 VIP
               </span>
             )}
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-display leading-none mb-3 text-foreground">
+            <h1 className="text-2xl md:text-5xl lg:text-7xl font-display leading-none mb-2 text-foreground">
               {banner.title}
             </h1>
             <p className="text-base md:text-lg text-muted-foreground mb-6">

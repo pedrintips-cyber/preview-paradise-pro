@@ -14,7 +14,7 @@ const CategoryBar = () => {
             to={`/categoria/${cat.slug}`}
             className="flex-shrink-0 group"
           >
-            <div className="relative w-36 h-52 md:w-44 md:h-64 rounded-lg overflow-hidden border-2 border-transparent group-hover:border-primary transition-all duration-300">
+            <div className="relative w-28 h-40 md:w-44 md:h-64 rounded-lg overflow-hidden border-2 border-transparent group-hover:border-primary transition-all duration-300">
               <img
                 src={cat.image}
                 alt={cat.name}
