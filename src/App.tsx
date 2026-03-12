@@ -16,6 +16,7 @@ import AdminCategories from "./pages/admin/AdminCategories.tsx";
 import AdminVideos from "./pages/admin/AdminVideos.tsx";
 import AdminVipPlans from "./pages/admin/AdminVipPlans.tsx";
 import AdminSettings from "./pages/admin/AdminSettings.tsx";
+import CheckoutPage from "./pages/CheckoutPage.tsx";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +31,7 @@ const App = () => (
           <Route path="/video/:id" element={<VideoDetail />} />
           <Route path="/categoria/:slug" element={<CategoryPage />} />
           <Route path="/vip" element={<VipPage />} />
+          <Route path="/checkout/:planId" element={<CheckoutPage />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<AdminDashboard />} />

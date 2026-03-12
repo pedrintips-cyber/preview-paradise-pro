@@ -115,6 +115,68 @@ export type Database = {
         }
         Relationships: []
       }
+      purchases: {
+        Row: {
+          amount: number
+          created_at: string | null
+          customer_document: string
+          customer_email: string
+          customer_name: string
+          customer_phone: string
+          expires_at: string | null
+          id: string
+          paradise_reference: string
+          paradise_transaction_id: string | null
+          plan_id: string | null
+          qr_code: string | null
+          qr_code_base64: string | null
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          customer_document: string
+          customer_email: string
+          customer_name: string
+          customer_phone: string
+          expires_at?: string | null
+          id?: string
+          paradise_reference: string
+          paradise_transaction_id?: string | null
+          plan_id?: string | null
+          qr_code?: string | null
+          qr_code_base64?: string | null
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          customer_document?: string
+          customer_email?: string
+          customer_name?: string
+          customer_phone?: string
+          expires_at?: string | null
+          id?: string
+          paradise_reference?: string
+          paradise_transaction_id?: string | null
+          plan_id?: string | null
+          qr_code?: string | null
+          qr_code_base64?: string | null
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "purchases_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "vip_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       settings: {
         Row: {
           id: string

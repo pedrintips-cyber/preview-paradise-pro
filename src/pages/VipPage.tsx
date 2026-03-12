@@ -105,10 +105,12 @@ const VipPage = () => {
                       </span>
                       <span className="text-sm text-muted-foreground">{periodLabel(plan.period)}</span>
                     </div>
-                    <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 shadow-glow text-sm font-semibold">
-                      <Lock className="w-4 h-4 mr-1.5" />
-                      Assinar {plan.name}
-                    </Button>
+                    <Link to={`/checkout/${plan.id}`}>
+                      <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 shadow-glow text-sm font-semibold">
+                        <Lock className="w-4 h-4 mr-1.5" />
+                        Assinar {plan.name}
+                      </Button>
+                    </Link>
                     <p className="text-[9px] text-muted-foreground mt-2 text-center">Cancele quando quiser • Pagamento seguro</p>
                   </div>
                 </motion.div>
