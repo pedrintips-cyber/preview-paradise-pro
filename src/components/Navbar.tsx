@@ -3,6 +3,7 @@ import { Crown, Search, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { categories } from "@/data/mockData";
 import { Button } from "@/components/ui/button";
+import logo from "@/assets/logo.webp";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
