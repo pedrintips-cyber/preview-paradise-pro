@@ -3,11 +3,11 @@ import { categories } from "@/data/mockData";
 
 const CategoryBar = () => {
   return (
-    <section className="py-8 px-4 md:px-8">
-      <h2 className="text-3xl md:text-4xl font-display text-foreground mb-6">
+    <section className="py-4 md:py-8 px-3 md:px-8">
+      <h2 className="text-xl md:text-3xl font-display text-foreground mb-4">
         Categorias
       </h2>
-      <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-4">
+      <div className="flex gap-3 md:gap-4 overflow-x-auto scrollbar-hide pb-4">
         {categories.map((cat) => (
           <Link
             key={cat.id}
