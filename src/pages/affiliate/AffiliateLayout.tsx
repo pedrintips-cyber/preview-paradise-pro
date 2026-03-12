@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   LayoutDashboard, Link2, ShoppingCart, History,
   Wallet, Settings, MessageCircle,
-  LogOut, Menu, X, CreditCard
+  LogOut, Menu, X, CreditCard, Lock
 } from "lucide-react";
 
 interface Affiliate {
@@ -20,17 +20,9 @@ interface Affiliate {
   gateway_type: string | null;
   total_earned: number;
   status: string;
+  is_paid: boolean;
+  paid_at: string | null;
 }
-
-const navItems = [
-  { label: "Dashboard", icon: LayoutDashboard, path: "/afiliado" },
-  { label: "Meu Link", icon: Link2, path: "/afiliado/link" },
-  { label: "Vendas", icon: ShoppingCart, path: "/afiliado/vendas" },
-  { label: "Histórico", icon: History, path: "/afiliado/historico" },
-  { label: "Carteira", icon: Wallet, path: "/afiliado/carteira" },
-  { label: "Gateway", icon: CreditCard, path: "/afiliado/gateway" },
-  { label: "Configurações", icon: Settings, path: "/afiliado/config" },
-];
 
 const AffiliateLayout = () => {
   const [affiliate, setAffiliate] = useState<Affiliate | null>(null);
@@ -38,6 +30,18 @@ const AffiliateLayout = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+
+  const isPaid = affiliate?.is_paid === true;
+
+  const navItems = [
+    { label: "Dashboard", icon: LayoutDashboard, path: "/afiliado", locked: !isPaid },
+    { label: "Meu Link", icon: Link2, path: "/afiliado/link", locked: !isPaid },
+    { label: "Vendas", icon: ShoppingCart, path: "/afiliado/vendas", locked: !isPaid },
+    { label: "Histórico", icon: History, path: "/afiliado/historico", locked: !isPaid },
+    { label: "Carteira", icon: Wallet, path: "/afiliado/carteira", locked: !isPaid },
+    { label: "Gateway", icon: CreditCard, path: "/afiliado/gateway", locked: !isPaid },
+    { label: "Configurações", icon: Settings, path: "/afiliado/config", locked: false },
+  ];
 
   useEffect(() => {
     const check = async () => {
@@ -51,7 +55,7 @@ const AffiliateLayout = () => {
         .maybeSingle();
 
       if (!data) { navigate("/afiliado/login"); return; }
-      setAffiliate(data as Affiliate);
+      setAffiliate(data as unknown as Affiliate);
       setLoading(false);
     };
     check();
@@ -82,19 +86,27 @@ const AffiliateLayout = () => {
         <div className="p-4 border-b border-border">
           <h2 className="text-sm font-display text-primary tracking-wider">PAINEL AFILIADO</h2>
           <p className="text-[10px] text-muted-foreground mt-0.5 truncate">{affiliate?.name}</p>
+          {!isPaid && (
+            <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-yellow-500/10 text-yellow-400 mt-1 inline-block">
+              Conta não ativada
+            </span>
+          )}
         </div>
         <nav className="flex-1 py-2">
           {navItems.map((item) => (
             <Link
               key={item.path}
-              to={item.path}
+              to={item.locked ? "/afiliado/config" : item.path}
               className={`flex items-center gap-2.5 px-4 py-2.5 text-xs transition-colors ${
-                location.pathname === item.path
+                item.locked
+                  ? "text-muted-foreground/50 cursor-not-allowed"
+                  : location.pathname === item.path
                   ? "text-primary bg-primary/10 border-r-2 border-primary"
                   : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
               }`}
+              onClick={(e) => { if (item.locked) e.preventDefault(); }}
             >
-              <item.icon className="w-4 h-4" />
+              {item.locked ? <Lock className="w-4 h-4" /> : <item.icon className="w-4 h-4" />}
               {item.label}
             </Link>
           ))}
@@ -131,15 +143,20 @@ const AffiliateLayout = () => {
             {navItems.map((item) => (
               <Link
                 key={item.path}
-                to={item.path}
-                onClick={() => setMenuOpen(false)}
+                to={item.locked ? "/afiliado/config" : item.path}
+                onClick={(e) => {
+                  if (item.locked) e.preventDefault();
+                  else setMenuOpen(false);
+                }}
                 className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors ${
-                  location.pathname === item.path
+                  item.locked
+                    ? "text-muted-foreground/50"
+                    : location.pathname === item.path
                     ? "text-primary bg-primary/10"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
-                <item.icon className="w-4 h-4" />
+                {item.locked ? <Lock className="w-4 h-4" /> : <item.icon className="w-4 h-4" />}
                 {item.label}
               </Link>
             ))}
@@ -163,10 +180,26 @@ const AffiliateLayout = () => {
 
       {/* Main content */}
       <main className="flex-1 md:ml-56 pt-12 md:pt-0 p-4 md:p-6">
-        <Outlet context={{ affiliate, setAffiliate }} />
+        {!isPaid && location.pathname !== "/afiliado/config" ? (
+          <ActivationPaywall affiliate={affiliate!} setAffiliate={setAffiliate} />
+        ) : (
+          <Outlet context={{ affiliate, setAffiliate }} />
+        )}
       </main>
     </div>
   );
+};
+
+// Activation paywall component
+const ActivationPaywall = ({ affiliate, setAffiliate }: { affiliate: Affiliate; setAffiliate: (a: Affiliate) => void }) => {
+  const [generating, setGenerating] = useState(false);
+  const [pixData, setPixData] = useState<{ purchase_id: string; qr_code: string; qr_code_base64: string; expires_at: string } | null>(null);
+  const [status, setStatus] = useState("pending");
+  const [copied, setCopied] = useState(false);
+  const { toast } = (await import("@/hooks/use-toast")).default ? { toast: () => {} } : (await import("@/hooks/use-toast"));
+
+  // Dynamic import workaround - use inline
+  return <ActivationPaywallInner affiliate={affiliate} setAffiliate={setAffiliate} />;
 };
 
 export default AffiliateLayout;

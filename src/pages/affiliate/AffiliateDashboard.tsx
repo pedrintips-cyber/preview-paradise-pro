@@ -47,8 +47,8 @@ const AffiliateDashboard = () => {
   const cards = [
     { label: "Cliques Totais", value: stats.totalClicks, icon: MousePointerClick, sub: `Hoje: ${stats.todayClicks}` },
     { label: "Vendas", value: stats.totalSales, icon: ShoppingCart, sub: `Hoje: ${stats.todaySales}` },
-    { label: "Total Recebido", value: `R$${stats.totalEarned.toFixed(2).replace(".", ",")}`, icon: TrendingUp, sub: hasGateway ? "Direto no gateway" : `Comissão: ${affiliate.commission_rate}%` },
-    { label: "Gateway", value: hasGateway ? "Ativo" : "Inativo", icon: Zap, sub: hasGateway ? "80% direto p/ você" : "Conecte seu gateway" },
+    { label: "Total Recebido", value: `R$${stats.totalEarned.toFixed(2).replace(".", ",")}`, icon: TrendingUp, sub: "100% das vendas" },
+    { label: "Gateway", value: hasGateway ? "Ativo" : "Inativo", icon: Zap, sub: hasGateway ? "Recebimento direto" : "Conecte seu gateway" },
   ];
 
   return (

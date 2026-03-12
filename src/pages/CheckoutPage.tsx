@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { Crown, ArrowLeft, Copy, Check, Clock, QrCode, ShieldCheck } from "lucide-react";
 import { motion } from "framer-motion";
@@ -16,23 +16,12 @@ interface Plan {
   banner_url: string | null;
 }
 
-interface PixPayment {
-  id: "affiliate" | "owner" | "single";
-  label: string;
-  amount: number;
-  qr_code: string;
-  qr_code_base64: string;
-  expires_at: string;
-}
-
 interface PixData {
   purchase_id: string;
   qr_code: string;
   qr_code_base64: string;
   expires_at: string;
   amount: number;
-  split?: boolean;
-  pix_payments?: PixPayment[];
 }
 
 const periodLabel = (p: string) => {
@@ -40,8 +29,6 @@ const periodLabel = (p: string) => {
   if (p === "trimestral") return "/trimestre";
   return "/ano";
 };
-
-const formatCurrencyFromCents = (value: number) => `R$${(Number(value) / 100).toFixed(2).replace(".", ",")}`;
 
 const CheckoutPage = () => {
   const { planId } = useParams();
@@ -51,7 +38,7 @@ const CheckoutPage = () => {
   const [plan, setPlan] = useState<Plan | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -59,7 +46,6 @@ const CheckoutPage = () => {
   const [phone, setPhone] = useState("");
 
   const [pixData, setPixData] = useState<PixData | null>(null);
-
   const [paymentStatus, setPaymentStatus] = useState<string>("pending");
 
   useEffect(() => {
@@ -149,41 +135,13 @@ const CheckoutPage = () => {
     }
   };
 
-  const copyPixCode = async (pixCode: string, key: string) => {
-    await navigator.clipboard.writeText(pixCode);
-    setCopiedKey(key);
+  const copyPixCode = async () => {
+    if (!pixData) return;
+    await navigator.clipboard.writeText(pixData.qr_code);
+    setCopied(true);
     toast({ title: "Código PIX copiado!" });
-    setTimeout(() => setCopiedKey((current) => (current === key ? null : current)), 2500);
+    setTimeout(() => setCopied(false), 2500);
   };
-
-  const payments = useMemo(() => {
-    if (!pixData) return [];
-
-    if (pixData.split && pixData.pix_payments?.length) {
-      return pixData.pix_payments;
-    }
-
-    return [
-      {
-        id: "single" as const,
-        label: "Pagamento",
-        amount: pixData.amount,
-        qr_code: pixData.qr_code,
-        qr_code_base64: pixData.qr_code_base64,
-        expires_at: pixData.expires_at,
-      },
-    ];
-  }, [pixData]);
-
-  const affiliatePaid = paymentStatus === "split_affiliate_paid" || paymentStatus === "approved";
-  const ownerPaid = paymentStatus === "split_owner_paid" || paymentStatus === "approved";
-
-  const splitProgressText =
-    paymentStatus === "split_affiliate_paid"
-      ? "Pagamento 1/2 confirmado. Falta pagar o PIX da plataforma (20%)."
-      : paymentStatus === "split_owner_paid"
-      ? "Pagamento 1/2 confirmado. Falta pagar o PIX do afiliado (80%)."
-      : "Pague os dois PIX para concluir a compra VIP.";
 
   if (loading) {
     return (
@@ -269,75 +227,33 @@ const CheckoutPage = () => {
                   </Link>
                 </div>
               ) : (
-                <>
-                  <div className="rounded-xl border border-primary/20 bg-card p-4 text-center">
-                    <div className="flex items-center justify-center gap-1.5 mb-2">
-                      <Clock className="w-4 h-4 text-primary animate-pulse" />
-                      <span className="text-xs text-primary font-medium">Aguardando pagamento...</span>
-                    </div>
-
-                    {pixData.split ? (
-                      <p className="text-[10px] text-muted-foreground mb-3">{splitProgressText}</p>
-                    ) : (
-                      <p className="text-[10px] text-muted-foreground mb-3">Escaneie o QR Code abaixo ou copie o código PIX</p>
-                    )}
-
-                    <div className="space-y-3">
-                      {payments.map((payment) => {
-                        const isPaid =
-                          payment.id === "affiliate"
-                            ? affiliatePaid
-                            : payment.id === "owner"
-                            ? ownerPaid
-                            : paymentStatus === "approved";
-
-                        return (
-                          <div key={payment.id} className={`rounded-lg border p-3 ${isPaid ? "border-primary/40 bg-primary/10" : "border-border bg-secondary/40"}`}>
-                            <div className="flex items-center justify-between gap-2 mb-2">
-                              <p className="text-[11px] font-medium text-foreground text-left">{payment.label}</p>
-                              <div className="flex items-center gap-1 text-[10px] font-semibold text-primary">
-                                {isPaid ? <Check className="w-3.5 h-3.5" /> : null}
-                                <span>{formatCurrencyFromCents(payment.amount)}</span>
-                              </div>
-                            </div>
-
-                            {payment.qr_code_base64 && (
-                              <div className="bg-background rounded-lg p-2 inline-block mb-2">
-                                <img src={payment.qr_code_base64} alt={`QR Code PIX ${payment.label}`} className="w-40 h-40 mx-auto" />
-                              </div>
-                            )}
-
-                            <div className="bg-background rounded-lg p-2 mb-2">
-                              <p className="text-[9px] text-muted-foreground break-all font-mono leading-relaxed max-h-16 overflow-y-auto">{payment.qr_code}</p>
-                            </div>
-
-                            <Button
-                              onClick={() => copyPixCode(payment.qr_code, payment.id)}
-                              variant="outline"
-                              className="w-full border-primary/30 text-primary hover:bg-primary/10 text-xs h-8"
-                            >
-                              {copiedKey === payment.id ? (
-                                <>
-                                  <Check className="w-3.5 h-3.5 mr-1.5" /> Copiado!
-                                </>
-                              ) : (
-                                <>
-                                  <Copy className="w-3.5 h-3.5 mr-1.5" /> Copiar código PIX
-                                </>
-                              )}
-                            </Button>
-
-                            {payment.expires_at && (
-                              <p className="text-[9px] text-muted-foreground mt-2 text-center">
-                                Expira em: {new Date(payment.expires_at).toLocaleString("pt-BR")}
-                              </p>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
+                <div className="rounded-xl border border-primary/20 bg-card p-4 text-center">
+                  <div className="flex items-center justify-center gap-1.5 mb-2">
+                    <Clock className="w-4 h-4 text-primary animate-pulse" />
+                    <span className="text-xs text-primary font-medium">Aguardando pagamento...</span>
                   </div>
-                </>
+                  <p className="text-[10px] text-muted-foreground mb-3">Escaneie o QR Code abaixo ou copie o código PIX</p>
+
+                  {pixData.qr_code_base64 && (
+                    <div className="bg-background rounded-lg p-2 inline-block mb-2">
+                      <img src={pixData.qr_code_base64} alt="QR Code PIX" className="w-44 h-44 mx-auto" />
+                    </div>
+                  )}
+
+                  <div className="bg-background rounded-lg p-2 mb-2">
+                    <p className="text-[9px] text-muted-foreground break-all font-mono leading-relaxed max-h-16 overflow-y-auto">{pixData.qr_code}</p>
+                  </div>
+
+                  <Button onClick={copyPixCode} variant="outline" className="w-full border-primary/30 text-primary hover:bg-primary/10 text-xs h-8">
+                    {copied ? <><Check className="w-3.5 h-3.5 mr-1.5" /> Copiado!</> : <><Copy className="w-3.5 h-3.5 mr-1.5" /> Copiar código PIX</>}
+                  </Button>
+
+                  {pixData.expires_at && (
+                    <p className="text-[9px] text-muted-foreground mt-2">
+                      Expira em: {new Date(pixData.expires_at).toLocaleString("pt-BR")}
+                    </p>
+                  )}
+                </div>
               )}
             </motion.div>
           )}

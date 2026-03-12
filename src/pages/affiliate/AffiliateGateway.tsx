@@ -99,8 +99,7 @@ const AffiliateGateway = () => {
           <AlertCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
           <div className="text-[10px] text-muted-foreground space-y-1">
             <p><strong className="text-foreground">Como funciona:</strong></p>
-            <p>• Quando alguém comprar pelo seu link, <span className="text-primary font-medium">80% do valor</span> vai direto pro seu gateway</p>
-            <p>• Os outros <span className="text-primary font-medium">20%</span> vão para a plataforma</p>
+            <p>• Quando alguém comprar pelo seu link, <span className="text-primary font-medium">100% do valor</span> vai direto pro seu gateway</p>
             <p>• Sem necessidade de saque — o dinheiro cai automático!</p>
           </div>
         </div>
