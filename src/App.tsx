@@ -23,7 +23,7 @@ import AffiliateDashboard from "./pages/affiliate/AffiliateDashboard.tsx";
 import AffiliateLink from "./pages/affiliate/AffiliateLink.tsx";
 import AffiliateSales from "./pages/affiliate/AffiliateSales.tsx";
 import AffiliateHistory from "./pages/affiliate/AffiliateHistory.tsx";
-import AffiliateWithdrawals from "./pages/affiliate/AffiliateWithdrawals.tsx";
+
 import AffiliateWallet from "./pages/affiliate/AffiliateWallet.tsx";
 import AffiliateGateway from "./pages/affiliate/AffiliateGateway.tsx";
 import AffiliateSettings from "./pages/affiliate/AffiliateSettings.tsx";
@@ -59,7 +59,7 @@ const App = () => (
             <Route path="link" element={<AffiliateLink />} />
             <Route path="vendas" element={<AffiliateSales />} />
             <Route path="historico" element={<AffiliateHistory />} />
-            <Route path="saques" element={<AffiliateWithdrawals />} />
+            
             <Route path="carteira" element={<AffiliateWallet />} />
             <Route path="gateway" element={<AffiliateGateway />} />
             <Route path="config" element={<AffiliateSettings />} />

@@ -29,14 +29,20 @@ serve(async (req) => {
       );
     }
 
-    // Find purchase by reference or transaction_id
+    // Find purchase - match by reference base (strip -AFF/-OWN suffixes)
+    let baseReference = external_id || "";
+    if (baseReference.endsWith("-AFF") || baseReference.endsWith("-OWN")) {
+      baseReference = baseReference.slice(0, -4);
+    }
+
+    // Update purchase status
     let query = supabase.from("purchases").update({ 
       status, 
       updated_at: new Date().toISOString() 
     });
 
-    if (external_id) {
-      query = query.eq("paradise_reference", external_id);
+    if (baseReference) {
+      query = query.eq("paradise_reference", baseReference);
     } else {
       query = query.eq("paradise_transaction_id", String(transaction_id));
     }
@@ -54,42 +60,53 @@ serve(async (req) => {
     // If approved, handle affiliate commission
     if (status === "approved") {
       let purchaseQuery = supabase.from("purchases").select("id, affiliate_id, amount, plan_id");
-      if (external_id) {
-        purchaseQuery = purchaseQuery.eq("paradise_reference", external_id);
+      if (baseReference) {
+        purchaseQuery = purchaseQuery.eq("paradise_reference", baseReference);
       } else {
         purchaseQuery = purchaseQuery.eq("paradise_transaction_id", String(transaction_id));
       }
       const { data: purchase } = await purchaseQuery.single();
 
       if (purchase?.affiliate_id) {
-        // Get affiliate commission rate
-        const { data: affiliate } = await supabase
-          .from("affiliates")
-          .select("id, commission_rate, balance, total_earned")
-          .eq("id", purchase.affiliate_id)
-          .single();
+        // Check if sale record already exists for this purchase
+        const { data: existingSale } = await supabase
+          .from("affiliate_sales")
+          .select("id")
+          .eq("purchase_id", purchase.id)
+          .maybeSingle();
 
-        if (affiliate) {
-          const saleAmount = purchase.amount / 100;
-          const commissionAmount = saleAmount * (Number(affiliate.commission_rate) / 100);
+        if (!existingSale) {
+          const { data: affiliate } = await supabase
+            .from("affiliates")
+            .select("id, commission_rate, balance, total_earned, gateway_token")
+            .eq("id", purchase.affiliate_id)
+            .single();
 
-          // Create affiliate sale record
-          await supabase.from("affiliate_sales").insert({
-            affiliate_id: affiliate.id,
-            purchase_id: purchase.id,
-            plan_id: purchase.plan_id,
-            sale_amount: saleAmount,
-            commission_amount: commissionAmount,
-            status: "approved",
-          });
+          if (affiliate) {
+            const saleAmount = purchase.amount / 100;
+            // If affiliate has gateway, they get 80% directly. Commission tracks this.
+            // If no gateway, use commission_rate from DB for tracking.
+            const commissionPercent = affiliate.gateway_token ? 80 : Number(affiliate.commission_rate);
+            const commissionAmount = saleAmount * (commissionPercent / 100);
 
-          // Update affiliate balance
-          await supabase.from("affiliates").update({
-            balance: Number(affiliate.balance) + commissionAmount,
-            total_earned: Number(affiliate.total_earned) + commissionAmount,
-          }).eq("id", affiliate.id);
+            // Create affiliate sale record
+            await supabase.from("affiliate_sales").insert({
+              affiliate_id: affiliate.id,
+              purchase_id: purchase.id,
+              plan_id: purchase.plan_id,
+              sale_amount: saleAmount,
+              commission_amount: commissionAmount,
+              status: "approved",
+            });
 
-          console.log(`Affiliate ${affiliate.id} earned ${commissionAmount} from purchase ${purchase.id}`);
+            // Update affiliate totals
+            await supabase.from("affiliates").update({
+              balance: Number(affiliate.balance) + commissionAmount,
+              total_earned: Number(affiliate.total_earned) + commissionAmount,
+            }).eq("id", affiliate.id);
+
+            console.log(`Affiliate ${affiliate.id} earned R$${commissionAmount.toFixed(2)} (${commissionPercent}%) from purchase ${purchase.id}${affiliate.gateway_token ? ' (direct gateway)' : ''}`);
+          }
         }
       }
     }

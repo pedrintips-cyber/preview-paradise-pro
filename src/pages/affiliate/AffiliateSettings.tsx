@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Settings, User } from "lucide-react";
+import { User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
@@ -12,8 +12,6 @@ const AffiliateSettings = () => {
   const [form, setForm] = useState({
     name: affiliate.name,
     phone: affiliate.email || "",
-    pix_key: affiliate.pix_key || "",
-    pix_key_type: affiliate.pix_key_type || "cpf",
   });
   const [saving, setSaving] = useState(false);
   const { toast } = useToast();
@@ -22,17 +20,13 @@ const AffiliateSettings = () => {
     setSaving(true);
     const { error } = await supabase
       .from("affiliates")
-      .update({
-        name: form.name,
-        pix_key: form.pix_key || null,
-        pix_key_type: form.pix_key_type,
-      })
+      .update({ name: form.name })
       .eq("id", affiliate.id);
 
     if (error) {
       toast({ title: "Erro ao salvar", description: error.message, variant: "destructive" });
     } else {
-      setAffiliate({ ...affiliate, name: form.name, pix_key: form.pix_key || null, pix_key_type: form.pix_key_type });
+      setAffiliate({ ...affiliate, name: form.name });
       toast({ title: "Configurações salvas!" });
     }
     setSaving(false);
@@ -69,32 +63,6 @@ const AffiliateSettings = () => {
             disabled
             className="bg-secondary border-border text-sm h-10 opacity-60"
           />
-        </div>
-
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="text-xs text-muted-foreground mb-1 block">Chave PIX</label>
-            <Input
-              placeholder="Sua chave PIX"
-              value={form.pix_key}
-              onChange={(e) => setForm({ ...form, pix_key: e.target.value })}
-              className="bg-secondary border-border text-sm h-10"
-            />
-          </div>
-          <div>
-            <label className="text-xs text-muted-foreground mb-1 block">Tipo PIX</label>
-            <select
-              value={form.pix_key_type}
-              onChange={(e) => setForm({ ...form, pix_key_type: e.target.value })}
-              className="w-full bg-secondary border border-border rounded-md text-sm h-10 px-2 text-foreground"
-            >
-              <option value="cpf">CPF</option>
-              <option value="cnpj">CNPJ</option>
-              <option value="email">Email</option>
-              <option value="phone">Telefone</option>
-              <option value="random">Aleatória</option>
-            </select>
-          </div>
         </div>
 
         <Button onClick={handleSave} disabled={saving} className="w-full bg-primary text-primary-foreground text-xs h-10">
