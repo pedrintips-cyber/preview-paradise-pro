@@ -20,7 +20,7 @@ const HeroBanner = () => {
   const banner = banners[current];
 
   return (
-    <div className="relative w-full h-[45vh] md:h-[70vh] min-h-[250px] md:min-h-[400px] overflow-hidden">
+    <div className="relative w-full h-[35vh] md:h-[65vh] min-h-[200px] md:min-h-[400px] overflow-hidden">
       <AnimatePresence mode="wait">
         <motion.div
           key={banner.id}
@@ -35,40 +35,40 @@ const HeroBanner = () => {
             alt={banner.title}
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-r from-background/80 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-background/40 to-transparent" />
         </motion.div>
       </AnimatePresence>
 
-      <div className="absolute bottom-10 left-4 md:bottom-16 md:left-16 z-10 max-w-xs md:max-w-xl">
+      <div className="absolute bottom-6 left-3 right-12 md:bottom-16 md:left-12 z-10 max-w-[70%] md:max-w-lg">
         <AnimatePresence mode="wait">
           <motion.div
             key={banner.id}
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.4, delay: 0.2 }}
           >
             {banner.isVip && (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-vip text-accent-foreground text-sm font-semibold mb-4">
-                <Crown className="w-4 h-4" />
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gradient-vip text-accent-foreground text-xs font-semibold mb-2">
+                <Crown className="w-3 h-3" />
                 VIP
               </span>
             )}
-            <h1 className="text-2xl md:text-5xl lg:text-7xl font-display leading-none mb-2 text-foreground">
+            <h1 className="text-lg md:text-4xl lg:text-6xl font-display leading-tight mb-1 md:mb-2 text-foreground line-clamp-2">
               {banner.title}
             </h1>
-            <p className="text-base md:text-lg text-muted-foreground mb-6">
+            <p className="text-xs md:text-base text-muted-foreground mb-3 md:mb-5 line-clamp-2">
               {banner.subtitle}
             </p>
-            <div className="flex gap-3">
-              <Button className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-glow px-6">
-                Assistir Agora
+            <div className="flex gap-2">
+              <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-glow text-xs md:text-sm px-3 md:px-5">
+                Assistir
               </Button>
               {banner.isVip && (
-                <Button variant="outline" className="border-accent text-accent hover:bg-accent/10">
-                  <Crown className="w-4 h-4 mr-2" />
-                  Seja VIP
+                <Button size="sm" variant="outline" className="border-accent text-accent hover:bg-accent/10 text-xs md:text-sm px-3 md:px-5">
+                  <Crown className="w-3 h-3 mr-1" />
+                  VIP
                 </Button>
               )}
             </div>
@@ -76,28 +76,28 @@ const HeroBanner = () => {
         </AnimatePresence>
       </div>
 
-      {/* Navigation arrows */}
+      {/* Navigation arrows - smaller on mobile */}
       <button
         onClick={prev}
-        className="absolute left-4 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-secondary/60 hover:bg-secondary text-foreground transition-colors"
+        className="absolute left-2 top-1/2 -translate-y-1/2 z-10 p-1.5 md:p-2 rounded-full bg-secondary/60 hover:bg-secondary text-foreground transition-colors"
       >
-        <ChevronLeft className="w-6 h-6" />
+        <ChevronLeft className="w-4 h-4 md:w-6 md:h-6" />
       </button>
       <button
         onClick={next}
-        className="absolute right-4 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-secondary/60 hover:bg-secondary text-foreground transition-colors"
+        className="absolute right-2 top-1/2 -translate-y-1/2 z-10 p-1.5 md:p-2 rounded-full bg-secondary/60 hover:bg-secondary text-foreground transition-colors"
       >
-        <ChevronRight className="w-6 h-6" />
+        <ChevronRight className="w-4 h-4 md:w-6 md:h-6" />
       </button>
 
       {/* Dots */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
         {banners.map((_, i) => (
           <button
             key={i}
             onClick={() => setCurrent(i)}
-            className={`w-2.5 h-2.5 rounded-full transition-all ${
-              i === current ? "bg-primary w-8" : "bg-muted-foreground/40"
+            className={`w-2 h-2 rounded-full transition-all ${
+              i === current ? "bg-primary w-6" : "bg-muted-foreground/40"
             }`}
           />
         ))}
