@@ -40,7 +40,7 @@ const HeroBanner = () => {
         </motion.div>
       </AnimatePresence>
 
-      <div className="absolute bottom-16 left-8 md:left-16 z-10 max-w-xl">
+      <div className="absolute bottom-10 left-4 md:bottom-16 md:left-16 z-10 max-w-xs md:max-w-xl">
         <AnimatePresence mode="wait">
           <motion.div
             key={banner.id}
