@@ -106,6 +106,7 @@ serve(async (req) => {
         qr_code: paradiseData.qr_code,
         qr_code_base64: paradiseData.qr_code_base64,
         expires_at: paradiseData.expires_at,
+        affiliate_id: affiliate_id || null,
       })
       .select()
       .single();
