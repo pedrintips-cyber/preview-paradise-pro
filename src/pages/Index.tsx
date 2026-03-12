@@ -1,12 +1,28 @@
+import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import HeroBanner from "@/components/HeroBanner";
 import CategoryBar from "@/components/CategoryBar";
 import VideoGrid from "@/components/VideoGrid";
-import { videos } from "@/data/mockData";
+import { supabase } from "@/integrations/supabase/client";
+import type { DBVideo } from "@/types/database";
 
 const Index = () => {
-  const freeVideos = videos.filter((v) => !v.isVip);
-  const vipVideos = videos.filter((v) => v.isVip);
+  const [videos, setVideos] = useState<DBVideo[]>([]);
+
+  useEffect(() => {
+    const load = async () => {
+      const { data } = await supabase
+        .from("videos")
+        .select("*")
+        .eq("active", true)
+        .order("created_at", { ascending: false });
+      setVideos(data || []);
+    };
+    load();
+  }, []);
+
+  const freeVideos = videos.filter((v) => !v.is_vip);
+  const vipVideos = videos.filter((v) => v.is_vip);
 
   return (
     <div className="min-h-screen bg-background">
@@ -14,8 +30,13 @@ const Index = () => {
       <main className="pt-12 md:pt-14">
         <HeroBanner />
         <CategoryBar />
-        <VideoGrid videos={freeVideos} title="Vídeos Gratuitos" />
-        <VideoGrid videos={vipVideos} title="🔥 Conteúdo VIP" />
+        {freeVideos.length > 0 && <VideoGrid videos={freeVideos} title="Vídeos Gratuitos" />}
+        {vipVideos.length > 0 && <VideoGrid videos={vipVideos} title="🔥 Conteúdo VIP" />}
+        {videos.length === 0 && (
+          <div className="py-20 text-center text-muted-foreground text-sm">
+            Nenhum vídeo cadastrado ainda. Adicione pelo painel admin.
+          </div>
+        )}
       </main>
     </div>
   );

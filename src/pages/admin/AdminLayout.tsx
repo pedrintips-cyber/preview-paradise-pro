@@ -8,6 +8,7 @@ const navItems = [
   { label: "Banners", icon: Image, path: "/admin/banners" },
   { label: "Categorias", icon: FolderOpen, path: "/admin/categorias" },
   { label: "Vídeos", icon: Video, path: "/admin/videos" },
+  { label: "Planos VIP", icon: Crown, path: "/admin/vip" },
   { label: "Configurações", icon: Settings, path: "/admin/config" },
 ];
 
