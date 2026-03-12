@@ -59,7 +59,7 @@ const App = () => (
             <Route path="link" element={<AffiliateLink />} />
             <Route path="vendas" element={<AffiliateSales />} />
             <Route path="historico" element={<AffiliateHistory />} />
-            <Route path="saques" element={<AffiliateWithdrawals />} />
+            
             <Route path="carteira" element={<AffiliateWallet />} />
             <Route path="gateway" element={<AffiliateGateway />} />
             <Route path="config" element={<AffiliateSettings />} />
