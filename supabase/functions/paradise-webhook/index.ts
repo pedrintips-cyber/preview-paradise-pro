@@ -7,8 +7,6 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const failureStatuses = new Set(["failed", "refused", "canceled", "cancelled", "expired", "chargeback"]);
-
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -33,31 +31,17 @@ serve(async (req) => {
       });
     }
 
-    const splitMatch = externalId.match(/-(AFF|OWN)$/i);
-    const splitPart = splitMatch?.[1]?.toUpperCase() || null;
-    const baseReference = splitPart ? externalId.replace(/-(AFF|OWN)$/i, "") : externalId;
+    // Find purchase
+    let purchase: {
+      id: string;
+      affiliate_id: string | null;
+      amount: number;
+      plan_id: string | null;
+      status: string;
+      paradise_reference: string;
+    } | null = null;
 
-    let purchase:
-      | {
-          id: string;
-          affiliate_id: string | null;
-          amount: number;
-          plan_id: string | null;
-          status: string;
-          paradise_reference: string;
-        }
-      | null = null;
-
-    if (baseReference) {
-      const { data } = await supabase
-        .from("purchases")
-        .select("id, affiliate_id, amount, plan_id, status, paradise_reference")
-        .eq("paradise_reference", baseReference)
-        .maybeSingle();
-      purchase = data;
-    }
-
-    if (!purchase && externalId) {
+    if (externalId) {
       const { data } = await supabase
         .from("purchases")
         .select("id, affiliate_id, amount, plan_id, status, paradise_reference")
@@ -84,23 +68,7 @@ serve(async (req) => {
     }
 
     const currentStatus = String(purchase.status || "pending").toLowerCase();
-    let nextStatus = currentStatus;
-
-    if (splitPart) {
-      if (currentStatus !== "approved") {
-        if (incomingStatus === "approved") {
-          if (splitPart === "AFF") {
-            nextStatus = currentStatus === "split_owner_paid" ? "approved" : "split_affiliate_paid";
-          } else if (splitPart === "OWN") {
-            nextStatus = currentStatus === "split_affiliate_paid" ? "approved" : "split_owner_paid";
-          }
-        } else if (failureStatuses.has(incomingStatus)) {
-          nextStatus = "failed";
-        }
-      }
-    } else {
-      if (incomingStatus) nextStatus = incomingStatus;
-    }
+    const nextStatus = incomingStatus || currentStatus;
 
     if (nextStatus !== currentStatus) {
       const { error: updateErr } = await supabase
@@ -118,8 +86,24 @@ serve(async (req) => {
     }
 
     const hasJustBeenApproved = currentStatus !== "approved" && nextStatus === "approved";
+    const isAffiliateActivation = purchase.paradise_reference.startsWith("AFF-ACT-");
 
-    if (hasJustBeenApproved && purchase.affiliate_id) {
+    // Handle affiliate activation payment
+    if (hasJustBeenApproved && isAffiliateActivation && purchase.affiliate_id) {
+      await supabase
+        .from("affiliates")
+        .update({
+          is_paid: true,
+          paid_at: new Date().toISOString(),
+          activation_purchase_id: purchase.id,
+        })
+        .eq("id", purchase.affiliate_id);
+
+      console.log(`Affiliate ${purchase.affiliate_id} activated via payment ${purchase.id}`);
+    }
+
+    // Handle VIP purchase with affiliate tracking
+    if (hasJustBeenApproved && !isAffiliateActivation && purchase.affiliate_id) {
       const { data: existingSale } = await supabase
         .from("affiliate_sales")
         .select("id")
@@ -127,42 +111,40 @@ serve(async (req) => {
         .maybeSingle();
 
       if (!existingSale) {
+        const saleAmount = Number(purchase.amount) / 100;
+
+        // 100% goes to affiliate — record the full sale
+        await supabase.from("affiliate_sales").insert({
+          affiliate_id: purchase.affiliate_id,
+          purchase_id: purchase.id,
+          plan_id: purchase.plan_id,
+          sale_amount: saleAmount,
+          commission_amount: saleAmount, // 100% to affiliate
+          status: "approved",
+        });
+
+        // Update affiliate totals
         const { data: affiliate } = await supabase
           .from("affiliates")
-          .select("id, commission_rate, balance, total_earned, gateway_token")
+          .select("balance, total_earned")
           .eq("id", purchase.affiliate_id)
           .single();
 
         if (affiliate) {
-          const saleAmount = Number(purchase.amount) / 100;
-          const commissionPercent = affiliate.gateway_token ? 80 : Number(affiliate.commission_rate);
-          const commissionAmount = saleAmount * (commissionPercent / 100);
-
-          await supabase.from("affiliate_sales").insert({
-            affiliate_id: affiliate.id,
-            purchase_id: purchase.id,
-            plan_id: purchase.plan_id,
-            sale_amount: saleAmount,
-            commission_amount: commissionAmount,
-            status: "approved",
-          });
-
           await supabase
             .from("affiliates")
             .update({
-              balance: Number(affiliate.balance) + commissionAmount,
-              total_earned: Number(affiliate.total_earned) + commissionAmount,
+              balance: Number(affiliate.balance) + saleAmount,
+              total_earned: Number(affiliate.total_earned) + saleAmount,
             })
-            .eq("id", affiliate.id);
-
-          console.log(
-            `Affiliate ${affiliate.id} earned R$${commissionAmount.toFixed(2)} (${commissionPercent}%) from sale R$${saleAmount.toFixed(2)}. Owner earns R$${(saleAmount - commissionAmount).toFixed(2)} (${100 - commissionPercent}%)`
-          );
+            .eq("id", purchase.affiliate_id);
         }
+
+        console.log(`Affiliate ${purchase.affiliate_id} earned R$${saleAmount.toFixed(2)} (100%) from sale`);
       }
     }
 
-    console.log(`Purchase updated: ${purchase.paradise_reference} -> ${nextStatus} (incoming=${incomingStatus}, split=${splitPart || "none"})`);
+    console.log(`Purchase updated: ${purchase.paradise_reference} -> ${nextStatus}`);
 
     return new Response(JSON.stringify({ success: true }), {
       status: 200,

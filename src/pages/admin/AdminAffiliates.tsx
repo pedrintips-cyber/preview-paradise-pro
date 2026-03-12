@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Users, Eye, Ban, CheckCircle, DollarSign, MousePointerClick, TrendingUp, ArrowLeft, X } from "lucide-react";
+import { Users, Eye, Ban, CheckCircle, DollarSign, MousePointerClick, TrendingUp, ArrowLeft } from "lucide-react";
 
 interface Affiliate {
   id: string;
@@ -16,6 +16,8 @@ interface Affiliate {
   gateway_token: string | null;
   created_at: string | null;
   phone: string | null;
+  is_paid: boolean;
+  paid_at: string | null;
 }
 
 interface AffiliateSale {
@@ -34,36 +36,28 @@ const AdminAffiliates = () => {
   const [sales, setSales] = useState<AffiliateSale[]>([]);
   const [clickCount, setClickCount] = useState(0);
   const [loadingDetail, setLoadingDetail] = useState(false);
-  const [ownerEarnings, setOwnerEarnings] = useState(0);
-  const [totalSalesCount, setTotalSalesCount] = useState(0);
+  const [activationRevenue, setActivationRevenue] = useState(0);
+  const [totalAffiliates, setTotalAffiliates] = useState(0);
+  const [paidAffiliates, setPaidAffiliates] = useState(0);
   const { toast } = useToast();
 
   useEffect(() => {
     loadAffiliates();
-    loadOwnerStats();
   }, []);
 
   const loadAffiliates = async () => {
     const { data } = await supabase
       .from("affiliates")
-      .select("id, name, email, slug, status, balance, total_earned, commission_rate, gateway_token, created_at, phone")
+      .select("id, name, email, slug, status, balance, total_earned, commission_rate, gateway_token, created_at, phone, is_paid, paid_at")
       .order("total_earned", { ascending: false });
-    setAffiliates(data || []);
+
+    const list = (data || []) as unknown as Affiliate[];
+    setAffiliates(list);
+    setTotalAffiliates(list.length);
+    const paid = list.filter((a) => a.is_paid);
+    setPaidAffiliates(paid.length);
+    setActivationRevenue(paid.length * 250);
     setLoading(false);
-  };
-
-  const loadOwnerStats = async () => {
-    // Calculate owner's 20% from all affiliate sales
-    const { data: allSales } = await supabase
-      .from("affiliate_sales")
-      .select("sale_amount, commission_amount")
-      .eq("status", "approved");
-
-    if (allSales) {
-      const ownerTotal = allSales.reduce((sum, s) => sum + (Number(s.sale_amount) - Number(s.commission_amount)), 0);
-      setOwnerEarnings(ownerTotal);
-      setTotalSalesCount(allSales.length);
-    }
   };
 
   const openDetail = async (aff: Affiliate) => {
@@ -104,15 +98,20 @@ const AdminAffiliates = () => {
         <Users className="w-5 h-5 text-primary" /> Afiliados
       </h1>
 
-      {/* Owner earnings summary */}
-      <div className="grid grid-cols-2 gap-3 mb-5">
+      {/* Revenue summary */}
+      <div className="grid grid-cols-3 gap-3 mb-5">
         <div className="bg-card border border-border rounded-lg p-3">
-          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Seus Ganhos (20%)</p>
-          <p className="text-lg font-bold text-primary mt-1">R${ownerEarnings.toFixed(2).replace(".", ",")}</p>
+          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Receita Ativações</p>
+          <p className="text-lg font-bold text-primary mt-1">R${activationRevenue.toFixed(2).replace(".", ",")}</p>
+          <p className="text-[9px] text-muted-foreground">{paidAffiliates} pagos × R$250</p>
         </div>
         <div className="bg-card border border-border rounded-lg p-3">
-          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Total Vendas Afiliados</p>
-          <p className="text-lg font-bold text-foreground mt-1">{totalSalesCount}</p>
+          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Total Afiliados</p>
+          <p className="text-lg font-bold text-foreground mt-1">{totalAffiliates}</p>
+        </div>
+        <div className="bg-card border border-border rounded-lg p-3">
+          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Ativos (Pagos)</p>
+          <p className="text-lg font-bold text-foreground mt-1">{paidAffiliates}</p>
         </div>
       </div>
 
@@ -133,6 +132,9 @@ const AdminAffiliates = () => {
                 <p className="text-xs text-muted-foreground">Desde: {selected.created_at ? new Date(selected.created_at).toLocaleDateString("pt-BR") : "—"}</p>
               </div>
               <div className="flex items-center gap-2">
+                <span className={`text-[10px] px-2 py-0.5 rounded-full ${selected.is_paid ? "bg-green-500/10 text-green-400" : "bg-yellow-500/10 text-yellow-400"}`}>
+                  {selected.is_paid ? "Pago" : "Não pago"}
+                </span>
                 <span className={`text-[10px] px-2 py-0.5 rounded-full ${selected.status === "active" ? "bg-primary/10 text-primary" : "bg-destructive/10 text-destructive"}`}>
                   {selected.status === "active" ? "Ativo" : "Inativo"}
                 </span>
@@ -146,7 +148,7 @@ const AdminAffiliates = () => {
               <div className="bg-secondary rounded-md p-2 text-center">
                 <DollarSign className="w-3.5 h-3.5 text-primary mx-auto mb-0.5" />
                 <p className="text-xs font-bold text-foreground">R${Number(selected.total_earned).toFixed(2).replace(".", ",")}</p>
-                <p className="text-[9px] text-muted-foreground">Total ganho</p>
+                <p className="text-[9px] text-muted-foreground">Total vendido</p>
               </div>
               <div className="bg-secondary rounded-md p-2 text-center">
                 <MousePointerClick className="w-3.5 h-3.5 text-primary mx-auto mb-0.5" />
@@ -162,7 +164,8 @@ const AdminAffiliates = () => {
 
             <div className="mt-2 text-xs text-muted-foreground">
               Gateway: {selected.gateway_token ? <span className="text-primary">Conectado</span> : <span className="text-destructive">Não conectado</span>}
-              {" • "}Comissão: {selected.gateway_token ? "80%" : `${selected.commission_rate}%`}
+              {" • "}Comissão: 100%
+              {selected.paid_at && <> • Ativado em: {new Date(selected.paid_at).toLocaleDateString("pt-BR")}</>}
             </div>
           </div>
 
@@ -175,23 +178,22 @@ const AdminAffiliates = () => {
               <p className="text-xs text-muted-foreground text-center py-4">Nenhuma venda registrada</p>
             ) : (
               <div className="space-y-2 max-h-80 overflow-y-auto">
-                {sales.map((sale) => {
-                  const ownerCut = Number(sale.sale_amount) - Number(sale.commission_amount);
-                  return (
-                    <div key={sale.id} className="flex items-center justify-between py-2 border-b border-border last:border-0">
-                      <div>
-                        <p className="text-xs text-foreground">Venda R${Number(sale.sale_amount).toFixed(2).replace(".", ",")}</p>
-                        <p className="text-[10px] text-muted-foreground">
-                          {sale.created_at ? new Date(sale.created_at).toLocaleString("pt-BR") : "—"}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-xs text-primary font-medium">Afiliado: R${Number(sale.commission_amount).toFixed(2).replace(".", ",")}</p>
-                        <p className="text-[10px] text-muted-foreground">Você: R${ownerCut.toFixed(2).replace(".", ",")}</p>
-                      </div>
+                {sales.map((sale) => (
+                  <div key={sale.id} className="flex items-center justify-between py-2 border-b border-border last:border-0">
+                    <div>
+                      <p className="text-xs text-foreground">Venda R${Number(sale.sale_amount).toFixed(2).replace(".", ",")}</p>
+                      <p className="text-[10px] text-muted-foreground">
+                        {sale.created_at ? new Date(sale.created_at).toLocaleString("pt-BR") : "—"}
+                      </p>
                     </div>
-                  );
-                })}
+                    <div className="text-right">
+                      <p className="text-xs text-primary font-medium">100% → Afiliado</p>
+                      <span className={`text-[9px] px-1.5 py-0.5 rounded-full ${
+                        sale.status === "approved" ? "bg-green-500/10 text-green-400" : "bg-yellow-500/10 text-yellow-400"
+                      }`}>{sale.status === "approved" ? "Aprovada" : "Pendente"}</span>
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
           </div>
@@ -210,6 +212,9 @@ const AdminAffiliates = () => {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <p className="text-sm font-medium text-foreground truncate">{aff.name}</p>
+                    <span className={`text-[9px] px-1.5 py-0.5 rounded-full flex-shrink-0 ${aff.is_paid ? "bg-green-500/10 text-green-400" : "bg-yellow-500/10 text-yellow-400"}`}>
+                      {aff.is_paid ? "Pago" : "Não pago"}
+                    </span>
                     <span className={`text-[9px] px-1.5 py-0.5 rounded-full flex-shrink-0 ${aff.status === "active" ? "bg-primary/10 text-primary" : "bg-destructive/10 text-destructive"}`}>
                       {aff.status === "active" ? "Ativo" : "Inativo"}
                     </span>
@@ -218,7 +223,7 @@ const AdminAffiliates = () => {
                 </div>
                 <div className="text-right flex-shrink-0 ml-3">
                   <p className="text-sm font-bold text-primary">R${Number(aff.total_earned).toFixed(2).replace(".", ",")}</p>
-                  <p className="text-[10px] text-muted-foreground">total ganho</p>
+                  <p className="text-[10px] text-muted-foreground">total vendido</p>
                 </div>
                 <Eye className="w-4 h-4 text-muted-foreground ml-3 flex-shrink-0" />
               </div>

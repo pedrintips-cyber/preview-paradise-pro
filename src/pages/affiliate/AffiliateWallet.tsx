@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Wallet, TrendingUp, DollarSign, CreditCard, Zap } from "lucide-react";
+import { Wallet, TrendingUp, DollarSign, Zap } from "lucide-react";
 import type { Affiliate } from "./AffiliateLayout";
 
 const AffiliateWallet = () => {
   const { affiliate } = useOutletContext<{ affiliate: Affiliate }>();
   const [totalSales, setTotalSales] = useState(0);
-  const [totalCommission, setTotalCommission] = useState(0);
+  const [totalEarned, setTotalEarned] = useState(0);
   const [salesCount, setSalesCount] = useState(0);
 
   useEffect(() => {
@@ -21,7 +21,7 @@ const AffiliateWallet = () => {
 
       if (data) {
         setTotalSales(data.reduce((s, r) => s + Number(r.sale_amount), 0));
-        setTotalCommission(data.reduce((s, r) => s + Number(r.commission_amount), 0));
+        setTotalEarned(data.reduce((s, r) => s + Number(r.commission_amount), 0));
         setSalesCount(data.length);
       }
     };
@@ -42,8 +42,8 @@ const AffiliateWallet = () => {
             </div>
             <p className="text-xs text-muted-foreground">Total Recebido</p>
           </div>
-          <p className="text-2xl font-bold text-foreground">R${totalCommission.toFixed(2).replace(".", ",")}</p>
-          <p className="text-[10px] text-muted-foreground mt-1">{hasGateway ? "Direto no seu gateway" : "Via comissão"}</p>
+          <p className="text-2xl font-bold text-foreground">R${totalEarned.toFixed(2).replace(".", ",")}</p>
+          <p className="text-[10px] text-muted-foreground mt-1">100% direto no seu gateway</p>
         </div>
 
         <div className="bg-card border border-border rounded-xl p-5">
@@ -64,8 +64,8 @@ const AffiliateWallet = () => {
             </div>
             <p className="text-xs text-muted-foreground">Sua Comissão</p>
           </div>
-          <p className="text-2xl font-bold text-primary">{hasGateway ? "80%" : `${affiliate.commission_rate}%`}</p>
-          <p className="text-[10px] text-muted-foreground mt-1">{hasGateway ? "Recebimento direto" : "Por venda"}</p>
+          <p className="text-2xl font-bold text-primary">100%</p>
+          <p className="text-[10px] text-muted-foreground mt-1">Tudo vai pra você</p>
         </div>
       </div>
 
@@ -79,13 +79,13 @@ const AffiliateWallet = () => {
             </div>
             <div>
               <p className="text-xs font-medium text-foreground">Paradise Pags Conectado</p>
-              <p className="text-[10px] text-muted-foreground">80% das vendas caem direto no seu gateway automaticamente</p>
+              <p className="text-[10px] text-muted-foreground">100% das vendas caem direto no seu gateway automaticamente</p>
             </div>
           </div>
         ) : (
           <div className="flex items-center gap-3 p-3 rounded-lg bg-yellow-500/5 border border-yellow-500/20">
             <div className="w-9 h-9 rounded-lg bg-yellow-500/10 flex items-center justify-center">
-              <CreditCard className="w-4 h-4 text-yellow-400" />
+              <Wallet className="w-4 h-4 text-yellow-400" />
             </div>
             <div>
               <p className="text-xs font-medium text-foreground">Gateway não conectado</p>

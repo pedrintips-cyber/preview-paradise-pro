@@ -35,7 +35,7 @@ const AffiliateLink = () => {
           </div>
           <div>
             <p className="text-sm font-medium text-foreground">Seu link de afiliado</p>
-            <p className="text-[10px] text-muted-foreground">Compartilhe para ganhar comissões</p>
+            <p className="text-[10px] text-muted-foreground">Compartilhe para vender</p>
           </div>
         </div>
 
@@ -60,8 +60,8 @@ const AffiliateLink = () => {
         <div className="space-y-2 text-xs text-muted-foreground">
           <p>1. Compartilhe seu link com seus seguidores</p>
           <p>2. Quando alguém acessar pelo seu link, o clique é registrado</p>
-          <p>3. Se a pessoa comprar um plano VIP, você ganha <span className="text-primary font-medium">{affiliate.commission_rate}% de comissão</span></p>
-          <p>4. Acompanhe tudo no seu dashboard</p>
+          <p>3. Se a pessoa comprar um plano VIP, <span className="text-primary font-medium">100% do valor vai pra você</span></p>
+          <p>4. O dinheiro cai direto no seu gateway conectado</p>
         </div>
       </div>
     </div>

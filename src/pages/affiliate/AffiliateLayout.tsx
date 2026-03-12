@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react";
 import { Outlet, useNavigate, Link, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   LayoutDashboard, Link2, ShoppingCart, History,
   Wallet, Settings, MessageCircle,
-  LogOut, Menu, X, CreditCard
+  LogOut, Menu, X, CreditCard, Lock,
+  Crown, Copy, Check, Clock, QrCode, ShieldCheck
 } from "lucide-react";
 
 interface Affiliate {
@@ -20,17 +24,154 @@ interface Affiliate {
   gateway_type: string | null;
   total_earned: number;
   status: string;
+  is_paid: boolean;
+  paid_at: string | null;
 }
 
-const navItems = [
-  { label: "Dashboard", icon: LayoutDashboard, path: "/afiliado" },
-  { label: "Meu Link", icon: Link2, path: "/afiliado/link" },
-  { label: "Vendas", icon: ShoppingCart, path: "/afiliado/vendas" },
-  { label: "Histórico", icon: History, path: "/afiliado/historico" },
-  { label: "Carteira", icon: Wallet, path: "/afiliado/carteira" },
-  { label: "Gateway", icon: CreditCard, path: "/afiliado/gateway" },
-  { label: "Configurações", icon: Settings, path: "/afiliado/config" },
-];
+// Activation paywall component
+const ActivationPaywall = ({ affiliate, setAffiliate }: { affiliate: Affiliate; setAffiliate: (a: Affiliate) => void }) => {
+  const [generating, setGenerating] = useState(false);
+  const [pixData, setPixData] = useState<{ purchase_id: string; qr_code: string; qr_code_base64: string; expires_at: string } | null>(null);
+  const [status, setStatus] = useState("pending");
+  const [copied, setCopied] = useState(false);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    if (!pixData?.purchase_id) return;
+    const channel = supabase
+      .channel(`activation-${pixData.purchase_id}`)
+      .on("postgres_changes", {
+        event: "UPDATE", schema: "public", table: "purchases",
+        filter: `id=eq.${pixData.purchase_id}`,
+      }, (payload) => {
+        const newStatus = (payload.new as { status: string }).status;
+        setStatus(newStatus);
+        if (newStatus === "approved") {
+          toast({ title: "Conta ativada! 🎉", description: "Seu painel de afiliado foi liberado." });
+          setAffiliate({ ...affiliate, is_paid: true, paid_at: new Date().toISOString() });
+        }
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [pixData?.purchase_id, toast, affiliate, setAffiliate]);
+
+  const handleActivate = async () => {
+    setGenerating(true);
+    try {
+      const res = await supabase.functions.invoke("create-pix", {
+        body: {
+          type: "affiliate_activation",
+          affiliate_id: affiliate.id,
+          customer: {
+            name: affiliate.name,
+            email: affiliate.email,
+            document: "00000000000",
+            phone: "00000000000",
+          },
+        },
+      });
+      if (res.error) throw new Error(res.error.message);
+      const data = res.data;
+      if (data.error) throw new Error(data.error);
+      setPixData(data);
+    } catch (err: unknown) {
+      toast({
+        title: "Erro ao gerar pagamento",
+        description: err instanceof Error ? err.message : "Tente novamente",
+        variant: "destructive",
+      });
+    } finally {
+      setGenerating(false);
+    }
+  };
+
+  const copyPix = async () => {
+    if (!pixData) return;
+    await navigator.clipboard.writeText(pixData.qr_code);
+    setCopied(true);
+    toast({ title: "Código PIX copiado!" });
+    setTimeout(() => setCopied(false), 2500);
+  };
+
+  if (status === "approved") {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="rounded-xl border border-primary/30 bg-primary/10 p-8 text-center max-w-sm">
+          <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-3">
+            <Check className="w-8 h-8 text-primary" />
+          </div>
+          <h2 className="text-lg font-display text-foreground mb-1">Conta Ativada!</h2>
+          <p className="text-xs text-muted-foreground mb-4">Seu painel de afiliado foi liberado. Recarregue a página para acessar.</p>
+          <Button onClick={() => window.location.reload()} className="bg-primary text-primary-foreground text-sm">
+            Recarregar
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-center justify-center min-h-[60vh]">
+      <div className="max-w-sm w-full space-y-4">
+        <div className="rounded-xl border border-primary/20 bg-card p-6 text-center">
+          <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3">
+            <Crown className="w-7 h-7 text-primary" />
+          </div>
+          <h2 className="text-lg font-display text-foreground mb-1">Ative sua conta de afiliado</h2>
+          <p className="text-xs text-muted-foreground mb-4">
+            Para liberar seu painel, link de indicação e começar a vender, é necessário pagar a taxa de ativação.
+          </p>
+          <div className="bg-primary/5 border border-primary/20 rounded-lg p-3 mb-4">
+            <p className="text-2xl font-bold text-primary">R$250,00</p>
+            <p className="text-[10px] text-muted-foreground">Pagamento único • Acesso vitalício</p>
+          </div>
+
+          {!pixData ? (
+            <Button onClick={handleActivate} disabled={generating} className="w-full bg-primary text-primary-foreground text-sm h-10">
+              {generating ? (
+                <><div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin mr-2" /> Gerando PIX...</>
+              ) : (
+                <><QrCode className="w-4 h-4 mr-2" /> Pagar e Ativar</>
+              )}
+            </Button>
+          ) : (
+            <div className="space-y-3">
+              <div className="flex items-center justify-center gap-1.5 mb-1">
+                <Clock className="w-4 h-4 text-primary animate-pulse" />
+                <span className="text-xs text-primary font-medium">Aguardando pagamento...</span>
+              </div>
+
+              {pixData.qr_code_base64 && (
+                <div className="bg-background rounded-lg p-2 inline-block">
+                  <img src={pixData.qr_code_base64} alt="QR Code" className="w-40 h-40 mx-auto" />
+                </div>
+              )}
+
+              <div className="bg-background rounded-lg p-2">
+                <p className="text-[9px] text-muted-foreground break-all font-mono leading-relaxed max-h-16 overflow-y-auto">{pixData.qr_code}</p>
+              </div>
+
+              <Button onClick={copyPix} variant="outline" className="w-full border-primary/30 text-primary hover:bg-primary/10 text-xs h-8">
+                {copied ? <><Check className="w-3.5 h-3.5 mr-1.5" /> Copiado!</> : <><Copy className="w-3.5 h-3.5 mr-1.5" /> Copiar código PIX</>}
+              </Button>
+            </div>
+          )}
+        </div>
+
+        <div className="bg-card border border-border rounded-xl p-4">
+          <h3 className="text-sm font-display text-foreground mb-2">O QUE VOCÊ RECEBE</h3>
+          <div className="space-y-2 text-xs text-muted-foreground">
+            <p>✅ Link de indicação personalizado</p>
+            <p>✅ Dashboard completo com métricas</p>
+            <p>✅ 100% do valor das vendas vai pra você</p>
+            <p>✅ Recebimento direto no seu gateway</p>
+            <p>✅ Relatório de cliques e vendas</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const AffiliateLayout = () => {
   const [affiliate, setAffiliate] = useState<Affiliate | null>(null);
@@ -38,6 +179,18 @@ const AffiliateLayout = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+
+  const isPaid = affiliate?.is_paid === true;
+
+  const navItems = [
+    { label: "Dashboard", icon: LayoutDashboard, path: "/afiliado", locked: !isPaid },
+    { label: "Meu Link", icon: Link2, path: "/afiliado/link", locked: !isPaid },
+    { label: "Vendas", icon: ShoppingCart, path: "/afiliado/vendas", locked: !isPaid },
+    { label: "Histórico", icon: History, path: "/afiliado/historico", locked: !isPaid },
+    { label: "Carteira", icon: Wallet, path: "/afiliado/carteira", locked: !isPaid },
+    { label: "Gateway", icon: CreditCard, path: "/afiliado/gateway", locked: !isPaid },
+    { label: "Configurações", icon: Settings, path: "/afiliado/config", locked: false },
+  ];
 
   useEffect(() => {
     const check = async () => {
@@ -51,7 +204,7 @@ const AffiliateLayout = () => {
         .maybeSingle();
 
       if (!data) { navigate("/afiliado/login"); return; }
-      setAffiliate(data as Affiliate);
+      setAffiliate(data as unknown as Affiliate);
       setLoading(false);
     };
     check();
@@ -82,19 +235,27 @@ const AffiliateLayout = () => {
         <div className="p-4 border-b border-border">
           <h2 className="text-sm font-display text-primary tracking-wider">PAINEL AFILIADO</h2>
           <p className="text-[10px] text-muted-foreground mt-0.5 truncate">{affiliate?.name}</p>
+          {!isPaid && (
+            <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-yellow-500/10 text-yellow-400 mt-1 inline-block">
+              Conta não ativada
+            </span>
+          )}
         </div>
         <nav className="flex-1 py-2">
           {navItems.map((item) => (
             <Link
               key={item.path}
-              to={item.path}
+              to={item.locked ? "#" : item.path}
               className={`flex items-center gap-2.5 px-4 py-2.5 text-xs transition-colors ${
-                location.pathname === item.path
+                item.locked
+                  ? "text-muted-foreground/50 cursor-not-allowed"
+                  : location.pathname === item.path
                   ? "text-primary bg-primary/10 border-r-2 border-primary"
                   : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
               }`}
+              onClick={(e) => { if (item.locked) e.preventDefault(); }}
             >
-              <item.icon className="w-4 h-4" />
+              {item.locked ? <Lock className="w-4 h-4" /> : <item.icon className="w-4 h-4" />}
               {item.label}
             </Link>
           ))}
@@ -131,15 +292,20 @@ const AffiliateLayout = () => {
             {navItems.map((item) => (
               <Link
                 key={item.path}
-                to={item.path}
-                onClick={() => setMenuOpen(false)}
+                to={item.locked ? "#" : item.path}
+                onClick={(e) => {
+                  if (item.locked) e.preventDefault();
+                  else setMenuOpen(false);
+                }}
                 className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors ${
-                  location.pathname === item.path
+                  item.locked
+                    ? "text-muted-foreground/50"
+                    : location.pathname === item.path
                     ? "text-primary bg-primary/10"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
-                <item.icon className="w-4 h-4" />
+                {item.locked ? <Lock className="w-4 h-4" /> : <item.icon className="w-4 h-4" />}
                 {item.label}
               </Link>
             ))}
@@ -163,7 +329,11 @@ const AffiliateLayout = () => {
 
       {/* Main content */}
       <main className="flex-1 md:ml-56 pt-12 md:pt-0 p-4 md:p-6">
-        <Outlet context={{ affiliate, setAffiliate }} />
+        {!isPaid && location.pathname !== "/afiliado/config" ? (
+          <ActivationPaywall affiliate={affiliate!} setAffiliate={setAffiliate} />
+        ) : (
+          <Outlet context={{ affiliate, setAffiliate }} />
+        )}
       </main>
     </div>
   );
