@@ -29,11 +29,7 @@ serve(async (req) => {
       );
     }
 
-    // Find purchase - match by reference base (strip -AFF/-OWN suffixes)
-    let baseReference = external_id || "";
-    if (baseReference.endsWith("-AFF") || baseReference.endsWith("-OWN")) {
-      baseReference = baseReference.slice(0, -4);
-    }
+    const reference = external_id || "";
 
     // Update purchase status
     let query = supabase.from("purchases").update({ 
@@ -41,8 +37,8 @@ serve(async (req) => {
       updated_at: new Date().toISOString() 
     });
 
-    if (baseReference) {
-      query = query.eq("paradise_reference", baseReference);
+    if (reference) {
+      query = query.eq("paradise_reference", reference);
     } else {
       query = query.eq("paradise_transaction_id", String(transaction_id));
     }
@@ -60,15 +56,15 @@ serve(async (req) => {
     // If approved, handle affiliate commission
     if (status === "approved") {
       let purchaseQuery = supabase.from("purchases").select("id, affiliate_id, amount, plan_id");
-      if (baseReference) {
-        purchaseQuery = purchaseQuery.eq("paradise_reference", baseReference);
+      if (reference) {
+        purchaseQuery = purchaseQuery.eq("paradise_reference", reference);
       } else {
         purchaseQuery = purchaseQuery.eq("paradise_transaction_id", String(transaction_id));
       }
       const { data: purchase } = await purchaseQuery.single();
 
       if (purchase?.affiliate_id) {
-        // Check if sale record already exists for this purchase
+        // Check if sale record already exists
         const { data: existingSale } = await supabase
           .from("affiliate_sales")
           .select("id")
@@ -84,8 +80,9 @@ serve(async (req) => {
 
           if (affiliate) {
             const saleAmount = purchase.amount / 100;
-            // If affiliate has gateway, they get 80% directly. Commission tracks this.
-            // If no gateway, use commission_rate from DB for tracking.
+            // Affiliate with gateway gets 80% of the full sale amount
+            // The full amount is charged on their gateway, so they receive 100% in gateway
+            // but 80% is their commission, 20% is owner's cut (tracked internally)
             const commissionPercent = affiliate.gateway_token ? 80 : Number(affiliate.commission_rate);
             const commissionAmount = saleAmount * (commissionPercent / 100);
 
@@ -105,7 +102,7 @@ serve(async (req) => {
               total_earned: Number(affiliate.total_earned) + commissionAmount,
             }).eq("id", affiliate.id);
 
-            console.log(`Affiliate ${affiliate.id} earned R$${commissionAmount.toFixed(2)} (${commissionPercent}%) from purchase ${purchase.id}${affiliate.gateway_token ? ' (direct gateway)' : ''}`);
+            console.log(`Affiliate ${affiliate.id} earned R$${commissionAmount.toFixed(2)} (${commissionPercent}%) from sale R$${saleAmount.toFixed(2)}. Owner earns R$${(saleAmount - commissionAmount).toFixed(2)} (${100 - commissionPercent}%)`);
           }
         }
       }

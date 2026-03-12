@@ -80,107 +80,44 @@ serve(async (req) => {
     };
 
     let pixResult: any;
+    // Determine which API key to use for the FULL charge
+    const chargeApiKey = affiliateGatewayToken || OWNER_API_KEY;
+    const isAffiliateSplit = !!affiliateGatewayToken;
 
-    if (affiliateGatewayToken) {
-      // SPLIT: 80% to affiliate gateway, 20% to owner gateway
-      const affiliateAmount = Math.round(totalAmountCents * 0.80);
-      const ownerAmount = totalAmountCents - affiliateAmount;
+    console.log(`Payment: total=${totalAmountCents}, affiliate_split=${isAffiliateSplit}, affiliate_id=${affiliate_id || 'none'}`);
 
-      console.log(`Split payment: total=${totalAmountCents}, affiliate=${affiliateAmount}, owner=${ownerAmount}`);
+    // Always charge the FULL amount - on affiliate gateway if they have one, otherwise on owner gateway
+    const paradiseBody: Record<string, unknown> = {
+      amount: totalAmountCents,
+      description: `Plano VIP ${plan.name}`,
+      reference,
+      customer: customerData,
+    };
+    if (productHash) paradiseBody.productHash = productHash;
+    else paradiseBody.source = "api_externa";
 
-      // Create PIX on AFFILIATE's gateway (80%)
-      const affBody: Record<string, unknown> = {
-        amount: affiliateAmount,
-        description: `Plano VIP ${plan.name} (Afiliado)`,
-        reference: `${reference}-AFF`,
-        customer: customerData,
-      };
-      if (productHash) affBody.productHash = productHash;
-      else affBody.source = "api_externa";
+    const paradiseRes = await fetch(PARADISE_API_URL, {
+      method: "POST",
+      headers: { "X-API-Key": chargeApiKey, "Content-Type": "application/json" },
+      body: JSON.stringify(paradiseBody),
+    });
+    const paradiseData = await paradiseRes.json();
 
-      const affRes = await fetch(PARADISE_API_URL, {
-        method: "POST",
-        headers: { "X-API-Key": affiliateGatewayToken, "Content-Type": "application/json" },
-        body: JSON.stringify(affBody),
-      });
-      const affData = await affRes.json();
-
-      if (!affRes.ok || affData.status !== "success") {
-        console.error("Affiliate gateway error:", affData);
-        return new Response(
-          JSON.stringify({ error: "Erro ao gerar PIX no gateway do afiliado", details: affData }),
-          { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-
-      // Create PIX on OWNER's gateway (20%)
-      const ownerBody: Record<string, unknown> = {
-        amount: ownerAmount,
-        description: `Plano VIP ${plan.name} (Comissão)`,
-        reference: `${reference}-OWN`,
-        customer: customerData,
-      };
-      if (productHash) ownerBody.productHash = productHash;
-      else ownerBody.source = "api_externa";
-
-      const ownRes = await fetch(PARADISE_API_URL, {
-        method: "POST",
-        headers: { "X-API-Key": OWNER_API_KEY, "Content-Type": "application/json" },
-        body: JSON.stringify(ownerBody),
-      });
-      const ownData = await ownRes.json();
-
-      if (!ownRes.ok || ownData.status !== "success") {
-        console.error("Owner gateway error (non-blocking):", ownData);
-        // Non-blocking - affiliate PIX is the main one shown to user
-      }
-
-      // The customer sees the AFFILIATE's PIX (which is the larger amount - 80%)
-      // We show the full price but the PIX code is for the affiliate's 80%
-      pixResult = {
-        qr_code: affData.qr_code,
-        qr_code_base64: affData.qr_code_base64,
-        transaction_id: affData.transaction_id,
-        expires_at: affData.expires_at,
-        owner_transaction_id: ownData?.transaction_id || null,
-        split: true,
-        affiliate_amount: affiliateAmount,
-        owner_amount: ownerAmount,
-      };
-    } else {
-      // NO SPLIT: full amount to owner gateway
-      const paradiseBody: Record<string, unknown> = {
-        amount: totalAmountCents,
-        description: `Plano VIP ${plan.name}`,
-        reference,
-        customer: customerData,
-      };
-      if (productHash) paradiseBody.productHash = productHash;
-      else paradiseBody.source = "api_externa";
-
-      const paradiseRes = await fetch(PARADISE_API_URL, {
-        method: "POST",
-        headers: { "X-API-Key": OWNER_API_KEY, "Content-Type": "application/json" },
-        body: JSON.stringify(paradiseBody),
-      });
-      const paradiseData = await paradiseRes.json();
-
-      if (!paradiseRes.ok || paradiseData.status !== "success") {
-        console.error("Paradise API error:", paradiseData);
-        return new Response(
-          JSON.stringify({ error: "Erro ao gerar PIX", details: paradiseData }),
-          { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-
-      pixResult = {
-        qr_code: paradiseData.qr_code,
-        qr_code_base64: paradiseData.qr_code_base64,
-        transaction_id: paradiseData.transaction_id,
-        expires_at: paradiseData.expires_at,
-        split: false,
-      };
+    if (!paradiseRes.ok || paradiseData.status !== "success") {
+      console.error("Paradise API error:", paradiseData);
+      return new Response(
+        JSON.stringify({ error: "Erro ao gerar PIX", details: paradiseData }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
+
+    pixResult = {
+      qr_code: paradiseData.qr_code,
+      qr_code_base64: paradiseData.qr_code_base64,
+      transaction_id: paradiseData.transaction_id,
+      expires_at: paradiseData.expires_at,
+      split: isAffiliateSplit,
+    };
 
     // Save purchase in DB
     const { data: purchase, error: insertErr } = await supabase
