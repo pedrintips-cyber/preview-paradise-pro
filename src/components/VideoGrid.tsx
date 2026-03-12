@@ -1,10 +1,10 @@
 import { useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import VideoCard from "@/components/VideoCard";
-import type { Video } from "@/data/mockData";
+import type { DBVideo } from "@/types/database";
 
 interface VideoGridProps {
-  videos: Video[];
+  videos: DBVideo[];
   title: string;
 }
 
@@ -14,18 +14,15 @@ const VideoGrid = ({ videos, title }: VideoGridProps) => {
   const scroll = (dir: "left" | "right") => {
     if (!scrollRef.current) return;
     const amount = scrollRef.current.offsetWidth * 0.7;
-    scrollRef.current.scrollBy({
-      left: dir === "left" ? -amount : amount,
-      behavior: "smooth",
-    });
+    scrollRef.current.scrollBy({ left: dir === "left" ? -amount : amount, behavior: "smooth" });
   };
+
+  if (videos.length === 0) return null;
 
   return (
     <section className="py-3 md:py-6 px-3 md:px-8">
       <div className="flex items-center justify-between mb-2">
-        <h2 className="text-base md:text-xl font-display text-foreground">
-          {title}
-        </h2>
+        <h2 className="text-base md:text-xl font-display text-foreground">{title}</h2>
         <div className="hidden md:flex gap-1">
           <button onClick={() => scroll("left")} className="p-1 rounded-full bg-secondary hover:bg-secondary/80 text-foreground transition-colors">
             <ChevronLeft className="w-4 h-4" />

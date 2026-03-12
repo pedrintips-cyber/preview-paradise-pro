@@ -207,6 +207,45 @@ export type Database = {
           },
         ]
       }
+      vip_plans: {
+        Row: {
+          active: boolean | null
+          banner_url: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          period: string
+          price: number
+          sort_order: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          active?: boolean | null
+          banner_url?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          period?: string
+          price: number
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          active?: boolean | null
+          banner_url?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          period?: string
+          price?: number
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

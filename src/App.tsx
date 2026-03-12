@@ -14,6 +14,7 @@ import AdminDashboard from "./pages/admin/AdminDashboard.tsx";
 import AdminBanners from "./pages/admin/AdminBanners.tsx";
 import AdminCategories from "./pages/admin/AdminCategories.tsx";
 import AdminVideos from "./pages/admin/AdminVideos.tsx";
+import AdminVipPlans from "./pages/admin/AdminVipPlans.tsx";
 import AdminSettings from "./pages/admin/AdminSettings.tsx";
 
 const queryClient = new QueryClient();
@@ -35,6 +36,7 @@ const App = () => (
             <Route path="banners" element={<AdminBanners />} />
             <Route path="categorias" element={<AdminCategories />} />
             <Route path="videos" element={<AdminVideos />} />
+            <Route path="vip" element={<AdminVipPlans />} />
             <Route path="config" element={<AdminSettings />} />
           </Route>
           <Route path="*" element={<NotFound />} />

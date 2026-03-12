@@ -1,8 +1,11 @@
+import { useState, useEffect } from "react";
 import { Crown, Check, Zap, Shield, Star, Play, Lock, Users, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
+import { supabase } from "@/integrations/supabase/client";
+import type { DBVipPlan } from "@/types/database";
 
 const benefits = [
   { icon: Play, text: "Acesso a todos os vídeos exclusivos" },
@@ -14,11 +17,33 @@ const benefits = [
 
 const testimonials = [
   { name: "Lucas M.", text: "Melhor investimento que fiz. Conteúdo incrível por um preço absurdo." },
-  { name: "Ana P.", text: "Não acredito que é só R$29,90 no ANO. Vale cada centavo!" },
+  { name: "Ana P.", text: "Não acredito que é tão barato. Vale cada centavo!" },
   { name: "Carlos R.", text: "Conteúdo de qualidade e sem enrolação. Recomendo demais." },
 ];
 
+const periodLabel = (p: string) => {
+  if (p === "mensal") return "/mês";
+  if (p === "trimestral") return "/trimestre";
+  return "/ano";
+};
+
 const VipPage = () => {
+  const [plans, setPlans] = useState<DBVipPlan[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const load = async () => {
+      const { data } = await supabase
+        .from("vip_plans")
+        .select("*")
+        .eq("active", true)
+        .order("sort_order");
+      setPlans((data as DBVipPlan[]) || []);
+      setLoading(false);
+    };
+    load();
+  }, []);
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -42,22 +67,59 @@ const VipPage = () => {
               SEJA <span className="text-primary">VIP</span> AGORA
             </h1>
             <p className="text-xs md:text-sm text-muted-foreground max-w-xs mx-auto">
-              Desbloqueie todo o conteúdo exclusivo da plataforma por apenas
+              Desbloqueie todo o conteúdo exclusivo da plataforma
             </p>
-
-            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2 }} className="mt-4 mb-5">
-              <span className="text-4xl md:text-6xl font-bold text-foreground">R$29,90</span>
-              <span className="text-sm text-muted-foreground ml-1">/ano</span>
-              <p className="text-[10px] text-muted-foreground mt-1">Apenas R$2,49/mês • Menos que um café ☕</p>
-            </motion.div>
-
-            <Button className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-glow px-8 py-2.5 text-sm font-semibold w-full max-w-[280px]">
-              <Lock className="w-4 h-4 mr-1.5" />
-              Desbloquear VIP — R$29,90/ano
-            </Button>
-            <p className="text-[9px] text-muted-foreground mt-2">Cancele quando quiser • Pagamento seguro</p>
           </motion.div>
         </div>
+
+        {/* Plans */}
+        {loading ? (
+          <div className="flex justify-center py-12">
+            <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+          </div>
+        ) : plans.length > 0 ? (
+          <div className="px-4 md:px-8 pb-6">
+            <div className="max-w-lg mx-auto grid gap-4">
+              {plans.map((plan, i) => (
+                <motion.div
+                  key={plan.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.15 + i * 0.1 }}
+                  className="relative rounded-xl overflow-hidden border border-primary/20 bg-card"
+                >
+                  {plan.banner_url && (
+                    <img src={plan.banner_url} alt={plan.name} className="w-full h-32 md:h-40 object-cover" />
+                  )}
+                  <div className="p-4 md:p-6">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Crown className="w-5 h-5 text-primary" />
+                      <h3 className="text-lg md:text-xl font-display text-foreground">{plan.name}</h3>
+                    </div>
+                    {plan.description && (
+                      <p className="text-xs text-muted-foreground mb-3">{plan.description}</p>
+                    )}
+                    <div className="flex items-baseline gap-1 mb-4">
+                      <span className="text-3xl md:text-4xl font-bold text-foreground">
+                        R${Number(plan.price).toFixed(2).replace(".", ",")}
+                      </span>
+                      <span className="text-sm text-muted-foreground">{periodLabel(plan.period)}</span>
+                    </div>
+                    <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 shadow-glow text-sm font-semibold">
+                      <Lock className="w-4 h-4 mr-1.5" />
+                      Assinar {plan.name}
+                    </Button>
+                    <p className="text-[9px] text-muted-foreground mt-2 text-center">Cancele quando quiser • Pagamento seguro</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="py-12 text-center text-muted-foreground text-sm">
+            Nenhum plano VIP disponível no momento.
+          </div>
+        )}
 
         {/* Benefits */}
         <div className="px-4 md:px-8 py-6">
@@ -97,16 +159,6 @@ const VipPage = () => {
             ))}
           </div>
         </div>
-
-        {/* Final CTA */}
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }} className="text-center px-4 py-8 border-t border-border">
-          <p className="text-xs text-muted-foreground mb-3">Não perca mais tempo. Comece a assistir agora.</p>
-          <Button className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-glow px-8 text-sm font-semibold">
-            <Crown className="w-4 h-4 mr-1.5" />
-            Quero ser VIP — R$29,90/ano
-            <ChevronRight className="w-4 h-4 ml-1" />
-          </Button>
-        </motion.div>
       </main>
     </div>
   );
