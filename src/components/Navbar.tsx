@@ -3,6 +3,7 @@ import { Crown, Search, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { categories } from "@/data/mockData";
 import { Button } from "@/components/ui/button";
+import logo from "@/assets/logo.webp";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -11,9 +12,7 @@ const Navbar = () => {
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-xl border-b border-border">
       <div className="flex items-center justify-between px-3 md:px-8 h-12 md:h-14">
         <Link to="/" className="flex items-center">
-          <span className="text-xl md:text-2xl font-display text-primary tracking-wider">
-            STREAMVIP
-          </span>
+          <img src={logo} alt="Hentai Vazados" className="h-8 md:h-10 object-contain" />
         </Link>
 
         <div className="hidden md:flex items-center gap-5">
