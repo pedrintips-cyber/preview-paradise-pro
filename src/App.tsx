@@ -17,6 +17,17 @@ import AdminVideos from "./pages/admin/AdminVideos.tsx";
 import AdminVipPlans from "./pages/admin/AdminVipPlans.tsx";
 import AdminSettings from "./pages/admin/AdminSettings.tsx";
 import CheckoutPage from "./pages/CheckoutPage.tsx";
+import AffiliateLogin from "./pages/affiliate/AffiliateLogin.tsx";
+import AffiliateLayout from "./pages/affiliate/AffiliateLayout.tsx";
+import AffiliateDashboard from "./pages/affiliate/AffiliateDashboard.tsx";
+import AffiliateLink from "./pages/affiliate/AffiliateLink.tsx";
+import AffiliateSales from "./pages/affiliate/AffiliateSales.tsx";
+import AffiliateHistory from "./pages/affiliate/AffiliateHistory.tsx";
+import AffiliateWithdrawals from "./pages/affiliate/AffiliateWithdrawals.tsx";
+import AffiliateWallet from "./pages/affiliate/AffiliateWallet.tsx";
+import AffiliateGateway from "./pages/affiliate/AffiliateGateway.tsx";
+import AffiliateSettings from "./pages/affiliate/AffiliateSettings.tsx";
+import AffiliateTracker from "./components/AffiliateTracker.tsx";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +37,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <AffiliateTracker />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/video/:id" element={<VideoDetail />} />
@@ -40,6 +52,17 @@ const App = () => (
             <Route path="videos" element={<AdminVideos />} />
             <Route path="vip" element={<AdminVipPlans />} />
             <Route path="config" element={<AdminSettings />} />
+          </Route>
+          <Route path="/afiliado/login" element={<AffiliateLogin />} />
+          <Route path="/afiliado" element={<AffiliateLayout />}>
+            <Route index element={<AffiliateDashboard />} />
+            <Route path="link" element={<AffiliateLink />} />
+            <Route path="vendas" element={<AffiliateSales />} />
+            <Route path="historico" element={<AffiliateHistory />} />
+            <Route path="saques" element={<AffiliateWithdrawals />} />
+            <Route path="carteira" element={<AffiliateWallet />} />
+            <Route path="gateway" element={<AffiliateGateway />} />
+            <Route path="config" element={<AffiliateSettings />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
