@@ -109,9 +109,11 @@ const CheckoutPage = () => {
     setSubmitting(true);
 
     try {
+      const affiliateId = localStorage.getItem("affiliate_id") || null;
       const res = await supabase.functions.invoke("create-pix", {
         body: {
           plan_id: plan.id,
+          affiliate_id: affiliateId,
           customer: { name: name.trim(), email: email.trim(), document: cleanDoc, phone: cleanPhone },
         },
       });
