@@ -20,7 +20,7 @@ const HeroBanner = () => {
   const banner = banners[current];
 
   return (
-    <div className="relative w-full h-[70vh] min-h-[400px] overflow-hidden">
+    <div className="relative w-full h-[45vh] md:h-[70vh] min-h-[250px] md:min-h-[400px] overflow-hidden">
       <AnimatePresence mode="wait">
         <motion.div
           key={banner.id}
@@ -40,7 +40,7 @@ const HeroBanner = () => {
         </motion.div>
       </AnimatePresence>
 
-      <div className="absolute bottom-16 left-8 md:left-16 z-10 max-w-xl">
+      <div className="absolute bottom-10 left-4 md:bottom-16 md:left-16 z-10 max-w-xs md:max-w-xl">
         <AnimatePresence mode="wait">
           <motion.div
             key={banner.id}
@@ -55,7 +55,7 @@ const HeroBanner = () => {
                 VIP
               </span>
             )}
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-display leading-none mb-3 text-foreground">
+            <h1 className="text-2xl md:text-5xl lg:text-7xl font-display leading-none mb-2 text-foreground">
               {banner.title}
             </h1>
             <p className="text-base md:text-lg text-muted-foreground mb-6">

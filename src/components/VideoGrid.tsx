@@ -8,11 +8,11 @@ interface VideoGridProps {
 
 const VideoGrid = ({ videos, title }: VideoGridProps) => {
   return (
-    <section className="py-8 px-4 md:px-8">
-      <h2 className="text-3xl md:text-4xl font-display text-foreground mb-6">
+    <section className="py-4 md:py-8 px-3 md:px-8">
+      <h2 className="text-xl md:text-3xl font-display text-foreground mb-4">
         {title}
       </h2>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4">
         {videos.map((video, i) => (
           <VideoCard key={video.id} video={video} index={i} />
         ))}
