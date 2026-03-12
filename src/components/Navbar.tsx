@@ -10,7 +10,7 @@ const Navbar = () => {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-xl border-b border-border">
-      <div className="flex items-center justify-between px-3 md:px-8 h-16 md:h-24">
+      <div className="flex items-center justify-between px-3 md:px-8 h-20 md:h-32">
         <Link to="/" className="flex items-center">
           <img src={logo} alt="Porn IDP" className="h-20 md:h-28 object-contain" />
         </Link>
