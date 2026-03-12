@@ -156,6 +156,7 @@ export type Database = {
       }
       affiliates: {
         Row: {
+          activation_purchase_id: string | null
           balance: number
           commission_rate: number
           created_at: string | null
@@ -163,7 +164,9 @@ export type Database = {
           gateway_token: string | null
           gateway_type: string | null
           id: string
+          is_paid: boolean
           name: string
+          paid_at: string | null
           phone: string | null
           pix_key: string | null
           pix_key_type: string | null
@@ -174,6 +177,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          activation_purchase_id?: string | null
           balance?: number
           commission_rate?: number
           created_at?: string | null
@@ -181,7 +185,9 @@ export type Database = {
           gateway_token?: string | null
           gateway_type?: string | null
           id?: string
+          is_paid?: boolean
           name: string
+          paid_at?: string | null
           phone?: string | null
           pix_key?: string | null
           pix_key_type?: string | null
@@ -192,6 +198,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          activation_purchase_id?: string | null
           balance?: number
           commission_rate?: number
           created_at?: string | null
@@ -199,7 +206,9 @@ export type Database = {
           gateway_token?: string | null
           gateway_type?: string | null
           id?: string
+          is_paid?: boolean
           name?: string
+          paid_at?: string | null
           phone?: string | null
           pix_key?: string | null
           pix_key_type?: string | null
