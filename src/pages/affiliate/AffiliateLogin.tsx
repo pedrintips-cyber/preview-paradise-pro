@@ -16,14 +16,8 @@ const AffiliateLogin = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const generateSlug = (name: string) => {
-    return name
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-|-$/g, "") + "-" + Math.random().toString(36).substring(2, 6);
-  };
+
+
 
   const handleLogin = async () => {
     setLoading(true);
