@@ -9,9 +9,9 @@ const Navbar = () => {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-xl border-b border-border">
-      <div className="flex items-center justify-between px-3 md:px-8 h-11 md:h-14">
+      <div className="flex items-center justify-between px-3 md:px-8 h-12 md:h-14">
         <Link to="/" className="flex items-center">
-          <span className="text-lg md:text-2xl font-display text-primary tracking-wider">
+          <span className="text-xl md:text-2xl font-display text-primary tracking-wider">
             STREAMVIP
           </span>
         </Link>
@@ -24,13 +24,13 @@ const Navbar = () => {
           ))}
         </div>
 
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-2">
           <button className="p-1.5 text-muted-foreground hover:text-foreground transition-colors">
             <Search className="w-4 h-4" />
           </button>
           <Link to="/vip">
-            <Button size="sm" className="hidden sm:flex bg-primary text-primary-foreground hover:bg-primary/90 shadow-glow text-[9px] h-6 px-2">
-              <Crown className="w-3 h-3 mr-0.5" />
+            <Button size="sm" className="hidden sm:flex bg-primary text-primary-foreground hover:bg-primary/90 shadow-glow text-[10px] h-7 px-3">
+              <Crown className="w-3 h-3 mr-1" />
               VIP
             </Button>
           </Link>
