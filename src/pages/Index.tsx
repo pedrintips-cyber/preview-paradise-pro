@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import HeroBanner from "@/components/HeroBanner";
-import CategoryBar from "@/components/CategoryBar";
+
 import VideoGrid from "@/components/VideoGrid";
 import { supabase } from "@/integrations/supabase/client";
 import type { DBVideo } from "@/types/database";
