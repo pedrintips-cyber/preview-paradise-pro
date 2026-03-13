@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import HeroBanner from "@/components/HeroBanner";
-import CategoryBar from "@/components/CategoryBar";
+
 import VideoGrid from "@/components/VideoGrid";
 import { supabase } from "@/integrations/supabase/client";
 import type { DBVideo } from "@/types/database";
@@ -29,7 +29,7 @@ const Index = () => {
       <Navbar />
       <main className="pt-20 md:pt-32">
         <HeroBanner />
-        <CategoryBar />
+        
         {freeVideos.length > 0 && <VideoGrid videos={freeVideos} title="Vídeos Gratuitos" />}
         {vipVideos.length > 0 && <VideoGrid videos={vipVideos} title="🔥 Conteúdo VIP" />}
         {videos.length === 0 && (
