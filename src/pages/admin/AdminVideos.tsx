@@ -248,7 +248,11 @@ const AdminVideos = () => {
       <div className="space-y-2">
         {videos.map((video) => (
           <div key={video.id} className="flex items-center gap-3 bg-card border border-border rounded-lg p-3">
-            <img src={video.thumbnail_url || "/placeholder.svg"} alt={video.title} className="w-20 h-12 rounded object-cover flex-shrink-0" />
+            {video.video_url ? (
+              <video src={video.video_url} muted preload="metadata" className="w-20 h-12 rounded object-cover flex-shrink-0 bg-black" />
+            ) : (
+              <div className="w-20 h-12 rounded bg-muted flex-shrink-0" />
+            )}
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5">
                 <p className="text-xs font-medium text-foreground truncate">{video.title}</p>
