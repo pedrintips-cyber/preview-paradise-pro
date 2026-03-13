@@ -31,6 +31,7 @@ interface SectionRow {
 const AdminVideos = () => {
   const [videos, setVideos] = useState<VideoRow[]>([]);
   const [categories, setCategories] = useState<CategoryRow[]>([]);
+  const [sections, setSections] = useState<SectionRow[]>([]);
   const [editing, setEditing] = useState<VideoRow | null>(null);
   const [creating, setCreating] = useState(false);
   const [form, setForm] = useState({
