@@ -19,13 +19,20 @@ const VideoCard = ({ video, index = 0 }: VideoCardProps) => {
     >
       <Link to={`/video/${video.id}`} className="group block">
         <div className="relative rounded-lg overflow-hidden bg-card border border-border/50 hover:border-primary/40 transition-all duration-300 hover:shadow-red">
-          {/* Thumbnail */}
-          <div className="relative aspect-video overflow-hidden">
-            <img
-              src={video.thumbnail_url || "/placeholder.svg"}
-              alt={video.title}
-              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
-            />
+          {/* Video Preview */}
+          <div className="relative aspect-video overflow-hidden bg-black">
+            {video.video_url ? (
+              <video
+                src={video.video_url}
+                muted
+                preload="metadata"
+                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-muted">
+                <Play className="w-8 h-8 text-muted-foreground" />
+              </div>
+            )}
             {/* Play overlay */}
             <div className="absolute inset-0 bg-background/0 group-hover:bg-background/30 transition-all duration-300 flex items-center justify-center">
               <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary/90 flex items-center justify-center opacity-0 group-hover:opacity-100 scale-75 group-hover:scale-100 transition-all duration-300 shadow-glow">

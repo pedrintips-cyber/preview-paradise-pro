@@ -55,42 +55,12 @@ const AdminVideos = () => {
 
   useEffect(() => { loadData(); }, []);
 
-  const extractThumbnailFromVideo = (videoUrl: string): Promise<Blob | null> => {
-    return new Promise((resolve) => {
-      const video = document.createElement("video");
-      video.crossOrigin = "anonymous";
-      video.src = videoUrl;
-      video.muted = true;
-      video.preload = "auto";
-
-      video.addEventListener("loadeddata", () => {
-        // Seek to 1 second or 10% of duration
-        video.currentTime = Math.min(1, video.duration * 0.1);
-      });
-
-      video.addEventListener("seeked", () => {
-        const canvas = document.createElement("canvas");
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        const ctx = canvas.getContext("2d");
-        if (!ctx) { resolve(null); return; }
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        canvas.toBlob((blob) => resolve(blob), "image/jpeg", 0.85);
-      });
-
-      video.addEventListener("error", () => resolve(null));
-      // Timeout safety
-      setTimeout(() => resolve(null), 15000);
-    });
-  };
-
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>, field: "thumbnail_url" | "video_url") => {
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    setUploading(field);
+    setUploading("video_url");
     const ext = file.name.split(".").pop();
-    const folder = field === "thumbnail_url" ? "thumbnails" : "videos";
-    const path = `${folder}/${Date.now()}.${ext}`;
+    const path = `videos/${Date.now()}.${ext}`;
     const { error } = await supabase.storage.from("media").upload(path, file);
     if (error) {
       toast({ title: "Erro no upload", description: error.message, variant: "destructive" });
@@ -98,27 +68,8 @@ const AdminVideos = () => {
       return;
     }
     const { data: { publicUrl } } = supabase.storage.from("media").getPublicUrl(path);
-    setForm((f) => ({ ...f, [field]: publicUrl }));
+    setForm((f) => ({ ...f, video_url: publicUrl }));
     setUploading(null);
-
-    // Auto-generate thumbnail when video is uploaded
-    if (field === "video_url" && !form.thumbnail_url) {
-      setUploading("thumbnail_url");
-      toast({ title: "Gerando thumbnail automática..." });
-      const blob = await extractThumbnailFromVideo(publicUrl);
-      if (blob) {
-        const thumbPath = `thumbnails/${Date.now()}.jpg`;
-        const { error: thumbErr } = await supabase.storage.from("media").upload(thumbPath, blob, { contentType: "image/jpeg" });
-        if (!thumbErr) {
-          const { data: { publicUrl: thumbUrl } } = supabase.storage.from("media").getPublicUrl(thumbPath);
-          setForm((f) => ({ ...f, thumbnail_url: thumbUrl }));
-          toast({ title: "Thumbnail gerada automaticamente! ✓" });
-        }
-      } else {
-        toast({ title: "Não foi possível gerar thumbnail", description: "Adicione manualmente", variant: "destructive" });
-      }
-      setUploading(null);
-    }
   };
 
   const handleSave = async () => {
@@ -227,15 +178,7 @@ const AdminVideos = () => {
           </div>
 
           <div>
-            <label className="text-xs text-muted-foreground mb-1 block">Thumbnail</label>
-            <input type="file" accept="image/*" onChange={(e) => handleUpload(e, "thumbnail_url")} className="text-xs text-muted-foreground" />
-            {uploading === "thumbnail_url" && <span className="text-xs text-primary ml-2">Enviando...</span>}
-            {form.thumbnail_url && <img src={form.thumbnail_url} alt="" className="mt-2 h-16 rounded object-cover" />}
-          </div>
-
-          <div>
-            <label className="text-xs text-muted-foreground mb-1 block">Arquivo de vídeo</label>
-            <input type="file" accept="video/*" onChange={(e) => handleUpload(e, "video_url")} className="text-xs text-muted-foreground" />
+            <input type="file" accept="video/*" onChange={(e) => handleUpload(e)} className="text-xs text-muted-foreground" />
             {uploading === "video_url" && <span className="text-xs text-primary ml-2">Enviando...</span>}
             {form.video_url && <p className="text-[10px] text-green-400 mt-1">✓ Vídeo carregado</p>}
           </div>
@@ -255,7 +198,11 @@ const AdminVideos = () => {
       <div className="space-y-2">
         {videos.map((video) => (
           <div key={video.id} className="flex items-center gap-3 bg-card border border-border rounded-lg p-3">
-            <img src={video.thumbnail_url || "/placeholder.svg"} alt={video.title} className="w-20 h-12 rounded object-cover flex-shrink-0" />
+            {video.video_url ? (
+              <video src={video.video_url} muted preload="metadata" className="w-20 h-12 rounded object-cover flex-shrink-0 bg-black" />
+            ) : (
+              <div className="w-20 h-12 rounded bg-muted flex-shrink-0" />
+            )}
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5">
                 <p className="text-xs font-medium text-foreground truncate">{video.title}</p>
