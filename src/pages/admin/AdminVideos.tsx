@@ -134,6 +134,7 @@ const AdminVideos = () => {
       video_url: form.video_url || null,
       duration: form.duration || null,
       category_id: form.category_id || null,
+      section_id: form.section_id || null,
       is_vip: form.is_vip,
     };
 
