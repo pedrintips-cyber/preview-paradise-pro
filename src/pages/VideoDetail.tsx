@@ -35,7 +35,7 @@ const VideoDetail = () => {
         .select("*")
         .eq("active", true)
         .neq("id", v.id)
-        .limit(6);
+        .order("created_at", { ascending: false });
       setRelated(rel || []);
 
       // Load cheapest VIP plan for CTA
@@ -160,7 +160,7 @@ const VideoDetail = () => {
           </div>
         </motion.div>
 
-        {related.length > 0 && <VideoGrid videos={related} title="Vídeos Relacionados" />}
+        {related.length > 0 && <VideoGrid videos={related} title="Mais Vídeos" />}
 
         <div className="text-center py-6 px-4 border-t border-border">
           <p className="text-xs text-muted-foreground mb-2">Acesso completo a todos os vídeos</p>
