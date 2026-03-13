@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
+import CategoryBar from "@/components/CategoryBar";
 import HeroBanner from "@/components/HeroBanner";
 
 import VideoGrid from "@/components/VideoGrid";
