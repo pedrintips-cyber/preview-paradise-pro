@@ -206,7 +206,7 @@ const AdminVideos = () => {
             onChange={(e) => setForm({ ...form, description: e.target.value })}
             className="w-full bg-secondary border border-border rounded-md text-sm p-2 text-foreground placeholder:text-muted-foreground resize-none h-20"
           />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <Input placeholder="Duração (ex: 12:34)" value={form.duration} onChange={(e) => setForm({ ...form, duration: e.target.value })} className="bg-secondary border-border text-sm h-9" />
             <select
               value={form.category_id}
@@ -215,6 +215,14 @@ const AdminVideos = () => {
             >
               <option value="">Sem categoria</option>
               {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+            </select>
+            <select
+              value={form.section_id}
+              onChange={(e) => setForm({ ...form, section_id: e.target.value })}
+              className="bg-secondary border border-border rounded-md text-sm h-9 px-2 text-foreground"
+            >
+              <option value="">Sem divisória</option>
+              {sections.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
             </select>
           </div>
 
