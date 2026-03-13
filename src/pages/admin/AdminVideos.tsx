@@ -35,7 +35,7 @@ const AdminVideos = () => {
   const [editing, setEditing] = useState<VideoRow | null>(null);
   const [creating, setCreating] = useState(false);
   const [form, setForm] = useState({
-    title: "", description: "", thumbnail_url: "", video_url: "", duration: "", category_id: "", is_vip: false
+    title: "", description: "", thumbnail_url: "", video_url: "", duration: "", category_id: "", section_id: "", is_vip: false
   });
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState<string | null>(null);
