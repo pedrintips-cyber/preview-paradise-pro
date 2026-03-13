@@ -173,6 +173,7 @@ const AdminVideos = () => {
       video_url: video.video_url || "",
       duration: video.duration || "",
       category_id: video.category_id || "",
+      section_id: (video as any).section_id || "",
       is_vip: video.is_vip || false,
     });
   };
