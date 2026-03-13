@@ -42,12 +42,14 @@ const AdminVideos = () => {
   const { toast } = useToast();
 
   const loadData = async () => {
-    const [videosRes, catsRes] = await Promise.all([
+    const [videosRes, catsRes, sectionsRes] = await Promise.all([
       supabase.from("videos").select("*").order("created_at", { ascending: false }),
       supabase.from("categories").select("id, name").order("name"),
+      supabase.from("sections").select("id, name").order("sort_order"),
     ]);
     setVideos(videosRes.data || []);
     setCategories(catsRes.data || []);
+    setSections(sectionsRes.data || []);
     setLoading(false);
   };
 
