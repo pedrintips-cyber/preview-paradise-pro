@@ -30,7 +30,7 @@ const Index = () => {
       <Navbar />
       <main className="pt-20 md:pt-32">
         <HeroBanner />
-        <CategoryBar />
+        
         
         {freeVideos.length > 0 && <VideoGrid videos={freeVideos} title="Vídeos Gratuitos" />}
         {vipVideos.length > 0 && <VideoGrid videos={vipVideos} title="🔥 Conteúdo VIP" />}
