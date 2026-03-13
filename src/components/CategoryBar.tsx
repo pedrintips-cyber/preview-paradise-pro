@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 
 interface CategoryRow {
@@ -27,19 +28,37 @@ const CategoryBar = () => {
   if (categories.length === 0) return null;
 
   return (
-    <section className="py-3 md:py-6 px-3 md:px-8">
-      <h2 className="text-base md:text-xl font-display text-foreground mb-2">Categorias</h2>
-      <div className="flex gap-2 md:gap-3 overflow-x-auto scrollbar-hide pb-1">
-        {categories.map((cat) => (
-          <Link key={cat.id} to={`/categoria/${cat.slug}`} className="flex-shrink-0 group">
-            <div className="relative w-20 h-28 md:w-36 md:h-48 rounded-md overflow-hidden border border-border group-hover:border-primary/40 transition-all duration-300">
-              <img src={cat.image_url} alt={cat.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-              <div className="absolute inset-0 bg-gradient-to-t from-background via-background/10 to-transparent" />
-              <span className="absolute bottom-1.5 left-0 right-0 text-center font-display text-[10px] md:text-sm text-foreground">
-                {cat.name}
-              </span>
-            </div>
-          </Link>
+    <section className="py-4 md:py-8">
+      <div className="flex items-center gap-3 mb-3 md:mb-4 px-4 md:px-10">
+        <div className="w-1 h-6 md:h-7 rounded-full bg-primary" />
+        <h2 className="text-lg md:text-2xl font-display text-foreground tracking-wide">Categorias</h2>
+      </div>
+      <div className="flex gap-3 md:gap-4 overflow-x-auto scrollbar-hide pb-2 px-4 md:px-10">
+        {categories.map((cat, i) => (
+          <motion.div
+            key={cat.id}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3, delay: i * 0.05 }}
+          >
+            <Link to={`/categoria/${cat.slug}`} className="flex-shrink-0 group block">
+              <div className="relative w-24 h-32 md:w-40 md:h-52 rounded-xl overflow-hidden border-2 border-border/50 group-hover:border-primary/60 transition-all duration-300 group-hover:shadow-red">
+                <img
+                  src={cat.image_url}
+                  alt={cat.name}
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
+                />
+                {/* Dark overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent group-hover:from-primary/30 transition-all duration-300" />
+                {/* Category name */}
+                <div className="absolute inset-x-0 bottom-0 p-2 md:p-3">
+                  <span className="font-display text-xs md:text-base text-foreground tracking-wider group-hover:text-primary transition-colors block text-center">
+                    {cat.name}
+                  </span>
+                </div>
+              </div>
+            </Link>
+          </motion.div>
         ))}
       </div>
     </section>
