@@ -393,6 +393,33 @@ export type Database = {
           },
         ]
       }
+      sections: {
+        Row: {
+          active: boolean | null
+          created_at: string | null
+          id: string
+          name: string
+          sort_order: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          active?: boolean | null
+          created_at?: string | null
+          id?: string
+          name: string
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          active?: boolean | null
+          created_at?: string | null
+          id?: string
+          name?: string
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       settings: {
         Row: {
           id: string
@@ -441,6 +468,7 @@ export type Database = {
           duration: string | null
           id: string
           is_vip: boolean | null
+          section_id: string | null
           thumbnail_url: string | null
           title: string
           updated_at: string | null
@@ -455,6 +483,7 @@ export type Database = {
           duration?: string | null
           id?: string
           is_vip?: boolean | null
+          section_id?: string | null
           thumbnail_url?: string | null
           title: string
           updated_at?: string | null
@@ -469,6 +498,7 @@ export type Database = {
           duration?: string | null
           id?: string
           is_vip?: boolean | null
+          section_id?: string | null
           thumbnail_url?: string | null
           title?: string
           updated_at?: string | null
@@ -481,6 +511,13 @@ export type Database = {
             columns: ["category_id"]
             isOneToOne: false
             referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "videos_section_id_fkey"
+            columns: ["section_id"]
+            isOneToOne: false
+            referencedRelation: "sections"
             referencedColumns: ["id"]
           },
         ]
