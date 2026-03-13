@@ -23,6 +23,11 @@ interface CategoryRow {
   name: string;
 }
 
+interface SectionRow {
+  id: string;
+  name: string;
+}
+
 const AdminVideos = () => {
   const [videos, setVideos] = useState<VideoRow[]>([]);
   const [categories, setCategories] = useState<CategoryRow[]>([]);
