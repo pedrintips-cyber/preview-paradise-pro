@@ -17,6 +17,7 @@ import AdminVideos from "./pages/admin/AdminVideos.tsx";
 import AdminVipPlans from "./pages/admin/AdminVipPlans.tsx";
 import AdminSettings from "./pages/admin/AdminSettings.tsx";
 import AdminAffiliates from "./pages/admin/AdminAffiliates.tsx";
+import AdminSections from "./pages/admin/AdminSections.tsx";
 import CheckoutPage from "./pages/CheckoutPage.tsx";
 import AffiliateLogin from "./pages/affiliate/AffiliateLogin.tsx";
 import AffiliateLayout from "./pages/affiliate/AffiliateLayout.tsx";
