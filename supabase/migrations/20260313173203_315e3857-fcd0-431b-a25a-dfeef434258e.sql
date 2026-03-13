@@ -1,0 +1,1 @@
+ALTER TABLE public.videos ALTER COLUMN views SET DEFAULT floor(random() * 19001 + 1000)::integer;
