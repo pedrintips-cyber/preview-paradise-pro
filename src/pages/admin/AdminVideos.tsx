@@ -23,25 +23,33 @@ interface CategoryRow {
   name: string;
 }
 
+interface SectionRow {
+  id: string;
+  name: string;
+}
+
 const AdminVideos = () => {
   const [videos, setVideos] = useState<VideoRow[]>([]);
   const [categories, setCategories] = useState<CategoryRow[]>([]);
+  const [sections, setSections] = useState<SectionRow[]>([]);
   const [editing, setEditing] = useState<VideoRow | null>(null);
   const [creating, setCreating] = useState(false);
   const [form, setForm] = useState({
-    title: "", description: "", thumbnail_url: "", video_url: "", duration: "", category_id: "", is_vip: false
+    title: "", description: "", thumbnail_url: "", video_url: "", duration: "", category_id: "", section_id: "", is_vip: false
   });
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState<string | null>(null);
   const { toast } = useToast();
 
   const loadData = async () => {
-    const [videosRes, catsRes] = await Promise.all([
+    const [videosRes, catsRes, sectionsRes] = await Promise.all([
       supabase.from("videos").select("*").order("created_at", { ascending: false }),
       supabase.from("categories").select("id, name").order("name"),
+      supabase.from("sections").select("id, name").order("sort_order"),
     ]);
     setVideos(videosRes.data || []);
     setCategories(catsRes.data || []);
+    setSections(sectionsRes.data || []);
     setLoading(false);
   };
 
@@ -126,6 +134,7 @@ const AdminVideos = () => {
       video_url: form.video_url || null,
       duration: form.duration || null,
       category_id: form.category_id || null,
+      section_id: form.section_id || null,
       is_vip: form.is_vip,
     };
 
@@ -139,7 +148,7 @@ const AdminVideos = () => {
 
     setEditing(null);
     setCreating(false);
-    setForm({ title: "", description: "", thumbnail_url: "", video_url: "", duration: "", category_id: "", is_vip: false });
+    setForm({ title: "", description: "", thumbnail_url: "", video_url: "", duration: "", category_id: "", section_id: "", is_vip: false });
     loadData();
   };
 
@@ -164,6 +173,7 @@ const AdminVideos = () => {
       video_url: video.video_url || "",
       duration: video.duration || "",
       category_id: video.category_id || "",
+      section_id: (video as any).section_id || "",
       is_vip: video.is_vip || false,
     });
   };
@@ -171,7 +181,7 @@ const AdminVideos = () => {
   const resetForm = () => {
     setCreating(true);
     setEditing(null);
-    setForm({ title: "", description: "", thumbnail_url: "", video_url: "", duration: "", category_id: "", is_vip: false });
+    setForm({ title: "", description: "", thumbnail_url: "", video_url: "", duration: "", category_id: "", section_id: "", is_vip: false });
   };
 
   if (loading) return <div className="flex justify-center py-12"><div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" /></div>;
@@ -196,7 +206,7 @@ const AdminVideos = () => {
             onChange={(e) => setForm({ ...form, description: e.target.value })}
             className="w-full bg-secondary border border-border rounded-md text-sm p-2 text-foreground placeholder:text-muted-foreground resize-none h-20"
           />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <Input placeholder="Duração (ex: 12:34)" value={form.duration} onChange={(e) => setForm({ ...form, duration: e.target.value })} className="bg-secondary border-border text-sm h-9" />
             <select
               value={form.category_id}
@@ -205,6 +215,14 @@ const AdminVideos = () => {
             >
               <option value="">Sem categoria</option>
               {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+            </select>
+            <select
+              value={form.section_id}
+              onChange={(e) => setForm({ ...form, section_id: e.target.value })}
+              className="bg-secondary border border-border rounded-md text-sm h-9 px-2 text-foreground"
+            >
+              <option value="">Sem divisória</option>
+              {sections.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
             </select>
           </div>
 

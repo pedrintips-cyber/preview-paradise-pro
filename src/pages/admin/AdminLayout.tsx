@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { Outlet, useNavigate, useLocation, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { LayoutDashboard, Image, FolderOpen, Video, Settings, LogOut, Crown, Menu, X, Users } from "lucide-react";
+import { LayoutDashboard, Image, FolderOpen, Video, Settings, LogOut, Crown, Menu, X, Users, Rows3 } from "lucide-react";
 
 const navItems = [
   { label: "Dashboard", icon: LayoutDashboard, path: "/admin" },
   { label: "Banners", icon: Image, path: "/admin/banners" },
+  { label: "Divisórias", icon: Rows3, path: "/admin/divisorias" },
   { label: "Categorias", icon: FolderOpen, path: "/admin/categorias" },
   { label: "Vídeos", icon: Video, path: "/admin/videos" },
   { label: "Planos VIP", icon: Crown, path: "/admin/vip" },
