@@ -178,8 +178,7 @@ const AdminVideos = () => {
           </div>
 
           <div>
-            <label className="text-xs text-muted-foreground mb-1 block">Arquivo de vídeo</label>
-            <input type="file" accept="video/*" onChange={(e) => handleUpload(e, "video_url")} className="text-xs text-muted-foreground" />
+            <input type="file" accept="video/*" onChange={(e) => handleUpload(e)} className="text-xs text-muted-foreground" />
             {uploading === "video_url" && <span className="text-xs text-primary ml-2">Enviando...</span>}
             {form.video_url && <p className="text-[10px] text-green-400 mt-1">✓ Vídeo carregado</p>}
           </div>
