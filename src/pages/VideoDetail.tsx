@@ -35,7 +35,7 @@ const VideoDetail = () => {
         .select("*")
         .eq("active", true)
         .neq("id", v.id)
-        .limit(6);
+        .order("created_at", { ascending: false });
       setRelated(rel || []);
 
       // Load cheapest VIP plan for CTA
