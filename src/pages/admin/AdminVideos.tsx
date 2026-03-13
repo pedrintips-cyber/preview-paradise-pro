@@ -181,7 +181,7 @@ const AdminVideos = () => {
   const resetForm = () => {
     setCreating(true);
     setEditing(null);
-    setForm({ title: "", description: "", thumbnail_url: "", video_url: "", duration: "", category_id: "", is_vip: false });
+    setForm({ title: "", description: "", thumbnail_url: "", video_url: "", duration: "", category_id: "", section_id: "", is_vip: false });
   };
 
   if (loading) return <div className="flex justify-center py-12"><div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" /></div>;
