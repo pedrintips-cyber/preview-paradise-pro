@@ -98,8 +98,13 @@ const CheckoutPage = () => {
     e.preventDefault();
     if (!plan) return;
 
+    const cleanCpf = cpf.replace(/\D/g, "");
     if (!email.trim() || !email.includes("@")) {
       toast({ title: "Informe um e-mail válido", variant: "destructive" });
+      return;
+    }
+    if (cleanCpf.length !== 11) {
+      toast({ title: "Informe um CPF válido (11 dígitos)", variant: "destructive" });
       return;
     }
 
@@ -114,7 +119,7 @@ const CheckoutPage = () => {
           customer: {
             name: email.split("@")[0],
             email: email.trim(),
-            document: "00000000000",
+            document: cleanCpf,
             phone: "00000000000",
           },
         },
