@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import { Crown, Eye, Clock, ArrowLeft, Lock, Star, Zap, Shield, ChevronRight } from "lucide-react";
+import { Crown, Eye, Clock, ArrowLeft, Lock, Star, Zap, Shield, ChevronRight, Flame, Play } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import Navbar from "@/components/Navbar";
@@ -14,6 +14,7 @@ const VideoDetail = () => {
   const [related, setRelated] = useState<DBVideo[]>([]);
   const [loading, setLoading] = useState(true);
   const [vipLabel, setVipLabel] = useState("R$29,90/ano");
+  const [cheapestPrice, setCheapestPrice] = useState("");
 
   useEffect(() => {
     const load = async () => {
@@ -47,7 +48,10 @@ const VideoDetail = () => {
         .limit(1);
       if (plans && plans.length > 0) {
         const p = plans[0];
-        setVipLabel(`R$${Number(p.price).toFixed(2).replace(".", ",")}/${p.period === "mensal" ? "mês" : p.period === "trimestral" ? "tri" : "ano"}`);
+        const priceFormatted = `R$${Number(p.price).toFixed(2).replace(".", ",")}`;
+        const periodText = p.period === "mensal" ? "mês" : p.period === "trimestral" ? "tri" : "ano";
+        setVipLabel(`${priceFormatted}/${periodText}`);
+        setCheapestPrice(priceFormatted);
       }
 
       setLoading(false);
@@ -71,44 +75,58 @@ const VideoDetail = () => {
     );
   }
 
-  const formatViews = (n: number) => (n >= 1000 ? `${(n / 1000).toFixed(1)}k` : n.toString());
+  const formatViews = (n: number) => {
+    if (n >= 1000000) return `${(n / 1000000).toFixed(1)}M`;
+    if (n >= 1000) return `${(n / 1000).toFixed(1)}k`;
+    return n.toString();
+  };
 
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
       <main className="pt-12 md:pt-14">
         {/* Video Player */}
-        <div className="relative w-full aspect-video max-h-[45vh] md:max-h-[60vh] bg-secondary overflow-hidden">
+        <div className="relative w-full aspect-video max-h-[45vh] md:max-h-[60vh] bg-black overflow-hidden">
           {video.video_url && !video.is_vip ? (
-            <video src={video.video_url} controls className="w-full h-full object-contain bg-black" poster={video.thumbnail_url || undefined} />
+            <video src={video.video_url} controls className="w-full h-full object-contain bg-black" />
           ) : (
-            <>
-              <img src={video.thumbnail_url || "/placeholder.svg"} alt={video.title} className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-background/60 backdrop-blur-sm flex items-center justify-center">
+            <div className="relative w-full h-full">
+              {/* Video as background preview */}
+              {video.video_url ? (
+                <video src={video.video_url} muted preload="metadata" className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full bg-secondary" />
+              )}
+              <div className="absolute inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center">
                 {video.is_vip ? (
-                  <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center px-4">
-                    <div className="w-14 h-14 md:w-20 md:h-20 rounded-full bg-primary/15 border-2 border-primary/40 flex items-center justify-center mx-auto mb-2 shadow-glow">
-                      <Lock className="w-6 h-6 md:w-8 md:h-8 text-primary" />
-                    </div>
-                    <h3 className="text-sm md:text-lg font-semibold text-foreground mb-1">Conteúdo VIP</h3>
-                    <p className="text-[10px] md:text-sm text-muted-foreground mb-2">Assine para assistir completo</p>
+                  <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center px-6 max-w-sm">
+                    {/* Pulsing lock icon */}
+                    <motion.div
+                      animate={{ scale: [1, 1.05, 1] }}
+                      transition={{ repeat: Infinity, duration: 2 }}
+                      className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 border-2 border-primary/50 flex items-center justify-center mx-auto mb-3 shadow-glow"
+                    >
+                      <Lock className="w-7 h-7 md:w-9 md:h-9 text-primary" />
+                    </motion.div>
+                    <h3 className="text-base md:text-xl font-display text-foreground mb-1 tracking-wider">CONTEÚDO EXCLUSIVO</h3>
+                    <p className="text-xs text-muted-foreground mb-3">Desbloqueie agora e assista completo</p>
                     <Link to="/vip">
-                      <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-glow text-xs h-8 px-5">
-                        <Crown className="w-3.5 h-3.5 mr-1.5" />
-                        Desbloquear — {vipLabel}
+                      <Button className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-glow text-sm h-10 px-6 font-semibold">
+                        <Crown className="w-4 h-4 mr-2" />
+                        DESBLOQUEAR — {vipLabel}
                       </Button>
                     </Link>
+                    <p className="text-[9px] text-muted-foreground/60 mt-2">Acesso imediato após pagamento</p>
                   </motion.div>
                 ) : (
-                  <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center">
-                    <div className="w-14 h-14 md:w-20 md:h-20 rounded-full bg-primary/15 border-2 border-primary/40 flex items-center justify-center mx-auto mb-2 cursor-pointer hover:bg-primary/25 transition-colors">
-                      <div className="w-0 h-0 border-t-[10px] border-t-transparent border-b-[10px] border-b-transparent border-l-[16px] border-l-primary ml-1" />
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center">
+                    <div className="w-14 h-14 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center mx-auto cursor-pointer hover:bg-primary/30 transition-colors">
+                      <Play className="w-6 h-6 text-primary ml-0.5" fill="currentColor" />
                     </div>
-                    <p className="text-xs text-muted-foreground">Assistir prévia</p>
                   </motion.div>
                 )}
               </div>
-            </>
+            </div>
           )}
         </div>
 
@@ -134,26 +152,55 @@ const VideoDetail = () => {
           <p className="text-xs md:text-sm text-muted-foreground leading-relaxed">{video.description}</p>
         </div>
 
-        {/* VIP CTA */}
+        {/* VIP CTA - Premium design */}
         <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="mx-3 md:mx-8 mb-5">
-          <div className="relative rounded-lg overflow-hidden border border-primary/15 bg-gradient-to-r from-primary/8 via-card to-primary/5 p-4 md:p-6">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl" />
-            <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-8">
-              <div className="flex-1">
-                <div className="flex items-center gap-1.5 mb-1">
-                  <Crown className="w-4 h-4 text-primary" />
-                  <span className="text-[10px] font-semibold text-primary tracking-wide uppercase">Oferta Especial</span>
+          <div className="relative rounded-xl overflow-hidden border border-primary/30 bg-gradient-to-br from-primary/10 via-card to-card">
+            {/* Decorative glow */}
+            <div className="absolute -top-12 -right-12 w-40 h-40 bg-primary/10 rounded-full blur-3xl" />
+            <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-primary/5 rounded-full blur-2xl" />
+            
+            <div className="relative z-10 p-4 md:p-6">
+              {/* Header */}
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+                  <Flame className="w-4 h-4 text-primary" />
                 </div>
-                <h3 className="text-base md:text-xl font-display text-foreground mb-1">DESBLOQUEIE TUDO POR {vipLabel.toUpperCase()}</h3>
-                <div className="flex flex-wrap gap-3 text-[9px] md:text-xs text-muted-foreground">
-                  <span className="flex items-center gap-0.5"><Star className="w-3 h-3 text-primary" />+500 vídeos</span>
-                  <span className="flex items-center gap-0.5"><Zap className="w-3 h-3 text-primary" />Sem anúncios</span>
-                  <span className="flex items-center gap-0.5"><Shield className="w-3 h-3 text-primary" />Cancele quando quiser</span>
+                <div>
+                  <span className="text-[10px] font-bold text-primary tracking-widest uppercase block">Oferta Limitada</span>
+                  <span className="text-[9px] text-muted-foreground">Milhares já assinaram</span>
                 </div>
               </div>
-              <Link to="/vip" className="flex-shrink-0 w-full md:w-auto">
-                <Button size="sm" className="w-full md:w-auto bg-primary text-primary-foreground hover:bg-primary/90 shadow-glow text-xs h-8 px-5">
-                  Ver Planos VIP <ChevronRight className="w-3.5 h-3.5 ml-1" />
+
+              {/* Main pitch */}
+              <h3 className="text-lg md:text-2xl font-display text-foreground mb-2 tracking-wide">
+                ACESSO TOTAL A TODOS OS VÍDEOS
+              </h3>
+              <p className="text-xs text-muted-foreground mb-3">
+                Por apenas <span className="text-primary font-semibold">{vipLabel}</span> você desbloqueia todo o conteúdo exclusivo
+              </p>
+
+              {/* Benefits */}
+              <div className="grid grid-cols-3 gap-2 mb-4">
+                <div className="text-center p-2 rounded-lg bg-background/50">
+                  <Star className="w-4 h-4 text-primary mx-auto mb-1" />
+                  <span className="text-[9px] text-muted-foreground block">+500 vídeos</span>
+                </div>
+                <div className="text-center p-2 rounded-lg bg-background/50">
+                  <Zap className="w-4 h-4 text-primary mx-auto mb-1" />
+                  <span className="text-[9px] text-muted-foreground block">Sem anúncios</span>
+                </div>
+                <div className="text-center p-2 rounded-lg bg-background/50">
+                  <Shield className="w-4 h-4 text-primary mx-auto mb-1" />
+                  <span className="text-[9px] text-muted-foreground block">Cancele a hora</span>
+                </div>
+              </div>
+
+              {/* CTA */}
+              <Link to="/vip" className="block">
+                <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 shadow-glow text-sm h-11 font-bold tracking-wide">
+                  <Crown className="w-4 h-4 mr-2" />
+                  QUERO SER VIP AGORA
+                  <ChevronRight className="w-4 h-4 ml-1" />
                 </Button>
               </Link>
             </div>
@@ -162,6 +209,7 @@ const VideoDetail = () => {
 
         {related.length > 0 && <VideoGrid videos={related} title="Mais Vídeos" />}
 
+        {/* Bottom CTA */}
         <div className="text-center py-6 px-4 border-t border-border">
           <p className="text-xs text-muted-foreground mb-2">Acesso completo a todos os vídeos</p>
           <Link to="/vip">
