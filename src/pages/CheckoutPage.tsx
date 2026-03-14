@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { Crown, ArrowLeft, Copy, Check, Clock, QrCode, ShieldCheck } from "lucide-react";
+import { Crown, ArrowLeft, Copy, Check, Clock, QrCode, ShieldCheck, ExternalLink } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
