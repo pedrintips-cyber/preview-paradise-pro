@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import { Crown, Check, Star, Lock, ShieldCheck } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
+import CheckoutModal from "@/components/CheckoutModal";
 import { supabase } from "@/integrations/supabase/client";
 import type { DBVipPlan } from "@/types/database";
 
