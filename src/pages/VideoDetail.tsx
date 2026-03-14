@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import Navbar from "@/components/Navbar";
 import VideoGrid from "@/components/VideoGrid";
 import { supabase } from "@/integrations/supabase/client";
+import { useCheckout } from "@/contexts/CheckoutContext";
 import type { DBVideo } from "@/types/database";
 
 const VideoDetail = () => {
