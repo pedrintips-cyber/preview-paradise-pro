@@ -146,6 +146,8 @@ const VipPage = () => {
               </motion.div>
             </div>
           </div>
+          {/* Checkout Modal */}
+          <CheckoutModal plan={plan} open={checkoutOpen} onClose={() => setCheckoutOpen(false)} />
         ) : (
           <div className="py-12 text-center text-muted-foreground text-sm">
             Nenhum plano disponível no momento.
