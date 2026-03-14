@@ -60,7 +60,7 @@ const VipPage = () => {
                   animate={{ opacity: 1 }}
                   className="rounded-t-xl overflow-hidden"
                 >
-                  <img src={plan.banner_url} alt={plan.name} className="w-full h-32 md:h-40 object-cover" />
+                  <img src={plan.banner_url} alt={plan.name} className="w-full object-contain" />
                 </motion.div>
               )}
 
