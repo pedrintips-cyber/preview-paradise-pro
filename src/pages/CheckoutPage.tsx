@@ -26,7 +26,7 @@ interface PixData {
 
 const periodLabel = (p: string) => {
   if (p === "mensal") return "/mês";
-  if (p === "trimestral") return "/trimestre";
+  if (p === "trimestral") return "/tri";
   return "/ano";
 };
 
@@ -157,115 +157,148 @@ const CheckoutPage = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <main className="pt-14 pb-8 px-4">
-        <div className="max-w-md mx-auto">
-          <Link to="/vip" className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground mb-4 transition-colors">
-            <ArrowLeft className="w-3.5 h-3.5" /> Voltar aos planos
+      <main className="pt-14 pb-6 px-4">
+        <div className="max-w-sm mx-auto">
+          <Link to="/vip" className="inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground mb-3 transition-colors">
+            <ArrowLeft className="w-3 h-3" /> Voltar
           </Link>
 
+          {/* Resumo do plano - compacto */}
           {plan && (
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="rounded-xl border border-primary/20 bg-card overflow-hidden mb-5">
-              {plan.banner_url && <img src={plan.banner_url} alt={plan.name} className="w-full h-28 object-cover" />}
-              <div className="p-4 flex items-center justify-between">
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="rounded-lg border border-border bg-card p-3 mb-4"
+            >
+              <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Crown className="w-5 h-5 text-primary" />
-                  <span className="font-display text-foreground">{plan.name}</span>
+                  <Crown className="w-4 h-4 text-primary" />
+                  <span className="text-sm font-display text-foreground">{plan.name}</span>
                 </div>
-                <span className="text-lg font-bold text-foreground">
-                  R${Number(plan.price).toFixed(2).replace(".", ",")}<span className="text-xs text-muted-foreground font-normal">{periodLabel(plan.period)}</span>
-                </span>
+                <div className="text-right">
+                  <span className="text-base font-bold text-foreground">
+                    R${Number(plan.price).toFixed(2).replace(".", ",")}
+                  </span>
+                  <span className="text-[10px] text-muted-foreground">{periodLabel(plan.period)}</span>
+                </div>
               </div>
             </motion.div>
           )}
 
           {!pixData ? (
-            <motion.form initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} onSubmit={handleSubmit} className="space-y-4">
-              <div className="rounded-xl border border-border bg-card p-4 space-y-3">
-                <h2 className="text-sm font-medium text-foreground flex items-center gap-1.5">
-                  <ShieldCheck className="w-4 h-4 text-primary" /> Quase lá!
-                </h2>
-                <div>
-                  <label className="text-xs text-muted-foreground mb-1 block">Seu e-mail</label>
-                  <Input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="seu@email.com"
-                    className="bg-secondary border-border text-sm h-10"
-                    required
-                    autoFocus
-                  />
-                  <p className="text-[9px] text-muted-foreground mt-1">Enviaremos o acesso para este e-mail</p>
-                </div>
+            <motion.form
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.05 }}
+              onSubmit={handleSubmit}
+              className="space-y-3"
+            >
+              {/* Email */}
+              <div className="rounded-lg border border-border bg-card p-3">
+                <label className="text-[11px] text-muted-foreground mb-1.5 block">Seu melhor e-mail</label>
+                <Input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="seu@email.com"
+                  className="bg-secondary border-border text-sm h-9"
+                  required
+                  autoFocus
+                />
+                <p className="text-[8px] text-muted-foreground mt-1">Enviaremos o acesso para este e-mail</p>
               </div>
 
-              <Button type="submit" disabled={submitting} className="w-full bg-primary text-primary-foreground hover:bg-primary/90 shadow-glow text-sm h-11 font-bold">
+              {/* Botão pagar */}
+              <Button
+                type="submit"
+                disabled={submitting}
+                className="w-full bg-primary text-primary-foreground hover:bg-primary/90 text-sm h-10 font-bold rounded-lg"
+              >
                 {submitting ? (
                   <>
-                    <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin mr-2" /> Gerando PIX...
+                    <div className="w-3.5 h-3.5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin mr-1.5" />
+                    Gerando PIX...
                   </>
                 ) : (
                   <>
-                    <QrCode className="w-4 h-4 mr-2" /> PAGAR COM PIX
+                    <QrCode className="w-3.5 h-3.5 mr-1.5" />
+                    PAGAR COM PIX
                   </>
                 )}
               </Button>
 
-              <p className="text-[9px] text-muted-foreground text-center">🔒 Pagamento 100% seguro via PIX • Acesso imediato</p>
+              <div className="flex items-center justify-center gap-1.5">
+                <ShieldCheck className="w-3 h-3 text-muted-foreground" />
+                <span className="text-[8px] text-muted-foreground">Pagamento 100% seguro via PIX • Acesso imediato</span>
+              </div>
             </motion.form>
           ) : (
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="space-y-4">
+            <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }}>
               {paymentStatus === "approved" ? (
-                <div className="rounded-xl border border-primary/30 bg-primary/10 p-6 text-center">
-                  <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-3">
-                    <Check className="w-8 h-8 text-primary" />
+                <div className="rounded-lg border border-primary/30 bg-card p-5 text-center">
+                  <div className="w-12 h-12 rounded-full bg-primary/15 flex items-center justify-center mx-auto mb-2.5">
+                    <Check className="w-6 h-6 text-primary" />
                   </div>
-                  <h2 className="text-lg font-display text-foreground mb-1">Pagamento Confirmado!</h2>
-                  <p className="text-xs text-muted-foreground mb-4">Seu acesso VIP foi ativado com sucesso.</p>
-                  
+                  <h2 className="text-base font-display text-foreground mb-1">Pagamento Confirmado!</h2>
+                  <p className="text-[11px] text-muted-foreground mb-4">Seu acesso VIP foi ativado.</p>
+
                   {groupLink ? (
-                    <div className="space-y-3">
-                      <a href={groupLink} target="_blank" rel="noopener noreferrer">
-                        <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 text-sm h-11 font-bold shadow-glow">
-                          <ExternalLink className="w-4 h-4 mr-2" />
-                          {groupLinkLabel}
-                        </Button>
-                      </a>
-                      <p className="text-[9px] text-muted-foreground">Clique no botão acima para acessar o grupo exclusivo</p>
-                    </div>
+                    <a href={groupLink} target="_blank" rel="noopener noreferrer" className="block">
+                      <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 text-sm h-10 font-bold">
+                        <ExternalLink className="w-3.5 h-3.5 mr-1.5" />
+                        {groupLinkLabel}
+                      </Button>
+                    </a>
                   ) : (
                     <Link to="/">
-                      <Button className="bg-primary text-primary-foreground hover:bg-primary/90 text-sm">Acessar Conteúdo VIP</Button>
+                      <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 text-sm h-10">
+                        Acessar Conteúdo
+                      </Button>
                     </Link>
                   )}
                 </div>
               ) : (
-                <div className="rounded-xl border border-primary/20 bg-card p-4 text-center">
+                <div className="rounded-lg border border-border bg-card p-4 text-center">
                   <div className="flex items-center justify-center gap-1.5 mb-2">
-                    <Clock className="w-4 h-4 text-primary animate-pulse" />
-                    <span className="text-xs text-primary font-medium">Aguardando pagamento...</span>
+                    <Clock className="w-3.5 h-3.5 text-primary animate-pulse" />
+                    <span className="text-[11px] text-primary font-medium">Aguardando pagamento</span>
                   </div>
-                  <p className="text-[10px] text-muted-foreground mb-3">Escaneie o QR Code abaixo ou copie o código PIX</p>
+                  <p className="text-[9px] text-muted-foreground mb-3">Escaneie o QR Code ou copie o código PIX</p>
 
                   {pixData.qr_code_base64 && (
-                    <div className="bg-background rounded-lg p-2 inline-block mb-2">
-                      <img src={pixData.qr_code_base64} alt="QR Code PIX" className="w-44 h-44 mx-auto" />
+                    <div className="bg-background rounded-lg p-1.5 inline-block mb-2">
+                      <img src={pixData.qr_code_base64} alt="QR Code PIX" className="w-36 h-36 mx-auto" />
                     </div>
                   )}
 
-                  <div className="bg-background rounded-lg p-2 mb-2">
-                    <p className="text-[9px] text-muted-foreground break-all font-mono leading-relaxed max-h-16 overflow-y-auto">{pixData.qr_code}</p>
+                  <div className="bg-background rounded p-2 mb-2">
+                    <p className="text-[8px] text-muted-foreground break-all font-mono leading-relaxed max-h-14 overflow-y-auto">
+                      {pixData.qr_code}
+                    </p>
                   </div>
 
-                  <Button onClick={copyPixCode} variant="outline" className="w-full border-primary/30 text-primary hover:bg-primary/10 text-xs h-8">
-                    {copied ? <><Check className="w-3.5 h-3.5 mr-1.5" /> Copiado!</> : <><Copy className="w-3.5 h-3.5 mr-1.5" /> Copiar código PIX</>}
+                  <Button
+                    onClick={copyPixCode}
+                    variant="outline"
+                    className="w-full border-border text-foreground hover:bg-secondary text-xs h-8"
+                  >
+                    {copied ? (
+                      <><Check className="w-3 h-3 mr-1.5 text-primary" /> Copiado!</>
+                    ) : (
+                      <><Copy className="w-3 h-3 mr-1.5" /> Copiar código PIX</>
+                    )}
                   </Button>
 
                   {pixData.expires_at && (
-                    <p className="text-[9px] text-muted-foreground mt-2">
-                      Expira em: {new Date(pixData.expires_at).toLocaleString("pt-BR")}
+                    <p className="text-[8px] text-muted-foreground mt-2">
+                      Expira: {new Date(pixData.expires_at).toLocaleString("pt-BR")}
                     </p>
                   )}
+
+                  <div className="flex items-center justify-center gap-1 mt-3">
+                    <ShieldCheck className="w-2.5 h-2.5 text-muted-foreground" />
+                    <span className="text-[7px] text-muted-foreground">Transação segura e criptografada</span>
+                  </div>
                 </div>
               )}
             </motion.div>
