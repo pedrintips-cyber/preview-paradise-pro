@@ -17,6 +17,7 @@ const HeroBanner = () => {
   const [banners, setBanners] = useState<BannerRow[]>([]);
   const [current, setCurrent] = useState(0);
   const [loading, setLoading] = useState(true);
+  const { openCheckout } = useCheckout();
 
   useEffect(() => {
     const load = async () => {
