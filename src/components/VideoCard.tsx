@@ -19,7 +19,14 @@ const VideoCard = ({ video, index = 0 }: VideoCardProps) => {
       <div className="relative rounded-lg overflow-hidden bg-card">
         {/* Thumbnail */}
         <div className="relative aspect-[9/13] overflow-hidden">
-          {video.video_url ? (
+          {video.thumbnail_url ? (
+            <img
+              src={video.thumbnail_url}
+              alt={video.title}
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              loading="lazy"
+            />
+          ) : video.video_url ? (
             <video
               src={video.video_url}
               muted
