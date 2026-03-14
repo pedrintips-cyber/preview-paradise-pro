@@ -179,9 +179,17 @@ const AdminVideos = () => {
           </div>
 
           <div>
-            <input type="file" accept="video/*" onChange={(e) => handleUpload(e)} className="text-xs text-muted-foreground" />
+            <label className="text-xs text-muted-foreground block mb-1">Thumbnail (opcional)</label>
+            <input type="file" accept="image/*" onChange={(e) => handleUpload(e, "thumbnail_url")} className="text-xs text-muted-foreground" />
+            {uploading === "thumbnail_url" && <span className="text-xs text-primary ml-2">Enviando...</span>}
+            {form.thumbnail_url && <p className="text-[10px] text-primary mt-1">✓ Thumbnail carregada</p>}
+          </div>
+
+          <div>
+            <label className="text-xs text-muted-foreground block mb-1">Vídeo</label>
+            <input type="file" accept="video/*" onChange={(e) => handleUpload(e, "video_url")} className="text-xs text-muted-foreground" />
             {uploading === "video_url" && <span className="text-xs text-primary ml-2">Enviando...</span>}
-            {form.video_url && <p className="text-[10px] text-green-400 mt-1">✓ Vídeo carregado</p>}
+            {form.video_url && <p className="text-[10px] text-primary mt-1">✓ Vídeo carregado</p>}
           </div>
 
           <label className="flex items-center gap-2 text-xs text-foreground cursor-pointer">
