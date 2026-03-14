@@ -99,12 +99,10 @@ const VideoDetail = () => {
                     <Lock className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
                     <p className="text-sm text-foreground font-body font-medium mb-1">Conteúdo VIP</p>
                     <p className="text-[11px] text-muted-foreground mb-3">Assine para desbloquear</p>
-                    <Link to="/vip">
-                      <Button size="sm" className="bg-primary text-primary-foreground text-xs h-9 px-5">
-                        <Crown className="w-3.5 h-3.5 mr-1.5" />
-                        Desbloquear — {vipLabel}
-                      </Button>
-                    </Link>
+                    <Button onClick={openCheckout} size="sm" className="bg-primary text-primary-foreground text-xs h-9 px-5">
+                      <Crown className="w-3.5 h-3.5 mr-1.5" />
+                      Desbloquear — {vipLabel}
+                    </Button>
                   </div>
                 ) : null}
               </div>
