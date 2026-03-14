@@ -25,9 +25,10 @@ const AdminSettings = () => {
   const handleSave = async () => {
     setSaving(true);
     for (const [key, value] of Object.entries(settings)) {
-      // Try update first, if no rows affected, insert
-      const { count } = await supabase.from("settings").update({ value }).eq("key", key).select("id", { count: "exact", head: true });
-      if (count === 0) {
+      const { data } = await supabase.from("settings").select("id").eq("key", key).limit(1);
+      if (data && data.length > 0) {
+        await supabase.from("settings").update({ value }).eq("key", key);
+      } else {
         await supabase.from("settings").insert({ key, value });
       }
     }
