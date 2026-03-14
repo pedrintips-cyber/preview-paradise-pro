@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import Navbar from "@/components/Navbar";
 import VideoGrid from "@/components/VideoGrid";
 import { supabase } from "@/integrations/supabase/client";
+import { useCheckout } from "@/contexts/CheckoutContext";
 import type { DBVideo } from "@/types/database";
 
 const VideoDetail = () => {
@@ -13,6 +14,7 @@ const VideoDetail = () => {
   const [related, setRelated] = useState<DBVideo[]>([]);
   const [loading, setLoading] = useState(true);
   const [vipLabel, setVipLabel] = useState("R$29,90/ano");
+  const { openCheckout } = useCheckout();
 
   useEffect(() => {
     const load = async () => {
@@ -97,12 +99,10 @@ const VideoDetail = () => {
                     <Lock className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
                     <p className="text-sm text-foreground font-body font-medium mb-1">Conteúdo VIP</p>
                     <p className="text-[11px] text-muted-foreground mb-3">Assine para desbloquear</p>
-                    <Link to="/vip">
-                      <Button size="sm" className="bg-primary text-primary-foreground text-xs h-9 px-5">
-                        <Crown className="w-3.5 h-3.5 mr-1.5" />
-                        Desbloquear — {vipLabel}
-                      </Button>
-                    </Link>
+                    <Button onClick={openCheckout} size="sm" className="bg-primary text-primary-foreground text-xs h-9 px-5">
+                      <Crown className="w-3.5 h-3.5 mr-1.5" />
+                      Desbloquear — {vipLabel}
+                    </Button>
                   </div>
                 ) : null}
               </div>
@@ -157,11 +157,9 @@ const VideoDetail = () => {
               ))}
             </div>
 
-            <Link to="/vip" className="block">
-              <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 text-xs h-9 font-bold rounded-md">
-                QUERO SER VIP — {vipLabel}
-              </Button>
-            </Link>
+            <Button onClick={openCheckout} className="w-full bg-primary text-primary-foreground hover:bg-primary/90 text-xs h-9 font-bold rounded-md">
+              QUERO SER VIP — {vipLabel}
+            </Button>
           </div>
         </div>
 

@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, Crown, Play } from "lucide-react";
-import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { useCheckout } from "@/contexts/CheckoutContext";
 
 interface BannerRow {
   id: string;
@@ -17,6 +17,7 @@ const HeroBanner = () => {
   const [banners, setBanners] = useState<BannerRow[]>([]);
   const [current, setCurrent] = useState(0);
   const [loading, setLoading] = useState(true);
+  const { openCheckout } = useCheckout();
 
   useEffect(() => {
     const load = async () => {
@@ -93,12 +94,10 @@ const HeroBanner = () => {
                 Assistir
               </Button>
               {banner.is_vip && (
-                <Link to="/vip">
-                  <Button variant="outline" className="border-primary/40 text-primary hover:bg-primary/10 text-xs md:text-sm h-9 md:h-11 px-4 md:px-6 rounded-lg font-semibold">
-                    <Crown className="w-4 h-4 mr-1.5" />
-                    Seja VIP
-                  </Button>
-                </Link>
+                <Button onClick={openCheckout} variant="outline" className="border-primary/40 text-primary hover:bg-primary/10 text-xs md:text-sm h-9 md:h-11 px-4 md:px-6 rounded-lg font-semibold">
+                  <Crown className="w-4 h-4 mr-1.5" />
+                  Seja VIP
+                </Button>
               )}
             </div>
           </motion.div>
