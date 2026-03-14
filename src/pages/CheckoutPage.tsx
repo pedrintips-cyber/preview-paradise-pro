@@ -43,6 +43,7 @@ const CheckoutPage = () => {
   const [groupLinkLabel, setGroupLinkLabel] = useState("Entrar no Grupo VIP");
 
   const [email, setEmail] = useState("");
+  const [cpf, setCpf] = useState("");
 
   const [pixData, setPixData] = useState<PixData | null>(null);
   const [paymentStatus, setPaymentStatus] = useState<string>("pending");
@@ -97,8 +98,13 @@ const CheckoutPage = () => {
     e.preventDefault();
     if (!plan) return;
 
+    const cleanCpf = cpf.replace(/\D/g, "");
     if (!email.trim() || !email.includes("@")) {
       toast({ title: "Informe um e-mail válido", variant: "destructive" });
+      return;
+    }
+    if (cleanCpf.length !== 11) {
+      toast({ title: "Informe um CPF válido (11 dígitos)", variant: "destructive" });
       return;
     }
 
@@ -113,7 +119,7 @@ const CheckoutPage = () => {
           customer: {
             name: email.split("@")[0],
             email: email.trim(),
-            document: "00000000000",
+            document: cleanCpf,
             phone: "00000000000",
           },
         },
@@ -206,6 +212,21 @@ const CheckoutPage = () => {
                   autoFocus
                 />
                 <p className="text-[8px] text-muted-foreground mt-1">Enviaremos o acesso para este e-mail</p>
+              </div>
+
+              {/* CPF */}
+              <div className="rounded-lg border border-border bg-card p-3">
+                <label className="text-[11px] text-muted-foreground mb-1.5 block">CPF</label>
+                <Input
+                  type="text"
+                  inputMode="numeric"
+                  value={cpf}
+                  onChange={(e) => setCpf(e.target.value.replace(/\D/g, "").slice(0, 11))}
+                  placeholder="00000000000"
+                  className="bg-secondary border-border text-sm h-9"
+                  required
+                />
+                <p className="text-[8px] text-muted-foreground mt-1">Necessário para processar o pagamento</p>
               </div>
 
               {/* Botão pagar */}
