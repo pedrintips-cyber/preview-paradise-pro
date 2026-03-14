@@ -39,6 +39,8 @@ const CheckoutPage = () => {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [groupLink, setGroupLink] = useState("");
+  const [groupLinkLabel, setGroupLinkLabel] = useState("Entrar no Grupo VIP");
 
   const [email, setEmail] = useState("");
 
