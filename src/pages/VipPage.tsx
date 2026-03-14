@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import { Crown, Check, Star, Lock, ShieldCheck } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
+import CheckoutModal from "@/components/CheckoutModal";
 import { supabase } from "@/integrations/supabase/client";
 import type { DBVipPlan } from "@/types/database";
 
@@ -23,6 +23,7 @@ const periodLabel = (p: string) => {
 const VipPage = () => {
   const [plan, setPlan] = useState<DBVipPlan | null>(null);
   const [loading, setLoading] = useState(true);
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -51,6 +52,7 @@ const VipPage = () => {
       <Navbar />
       <main className="pt-12 md:pt-14">
         {plan ? (
+          <>
           <div className="px-4 md:px-8 pt-6 pb-8">
             <div className="max-w-sm mx-auto">
               {/* Banner do plano */}
@@ -97,12 +99,13 @@ const VipPage = () => {
                 </div>
 
                 {/* CTA */}
-                <Link to={`/checkout/${plan.id}`}>
-                  <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 text-sm font-bold h-11 rounded-lg">
-                    <Lock className="w-3.5 h-3.5 mr-1.5" />
-                    ASSINAR AGORA
-                  </Button>
-                </Link>
+                <Button
+                  onClick={() => setCheckoutOpen(true)}
+                  className="w-full bg-primary text-primary-foreground hover:bg-primary/90 text-sm font-bold h-11 rounded-lg"
+                >
+                  <Lock className="w-3.5 h-3.5 mr-1.5" />
+                  ASSINAR AGORA
+                </Button>
 
                 <div className="flex items-center justify-center gap-1.5 mt-3">
                   <ShieldCheck className="w-3 h-3 text-muted-foreground" />
@@ -144,6 +147,8 @@ const VipPage = () => {
               </motion.div>
             </div>
           </div>
+          <CheckoutModal plan={plan} open={checkoutOpen} onClose={() => setCheckoutOpen(false)} />
+          </>
         ) : (
           <div className="py-12 text-center text-muted-foreground text-sm">
             Nenhum plano disponível no momento.
