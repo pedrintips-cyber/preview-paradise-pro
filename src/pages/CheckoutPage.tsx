@@ -43,6 +43,7 @@ const CheckoutPage = () => {
   const [groupLinkLabel, setGroupLinkLabel] = useState("Entrar no Grupo VIP");
 
   const [email, setEmail] = useState("");
+  const [cpf, setCpf] = useState("");
 
   const [pixData, setPixData] = useState<PixData | null>(null);
   const [paymentStatus, setPaymentStatus] = useState<string>("pending");
