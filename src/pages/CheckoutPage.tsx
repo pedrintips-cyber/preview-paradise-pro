@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { Crown, ArrowLeft, Copy, Check, Clock, QrCode, ShieldCheck } from "lucide-react";
+import { Crown, ArrowLeft, Copy, Check, Clock, QrCode, ShieldCheck, ExternalLink } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -39,6 +39,8 @@ const CheckoutPage = () => {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [groupLink, setGroupLink] = useState("");
+  const [groupLinkLabel, setGroupLinkLabel] = useState("Entrar no Grupo VIP");
 
   const [email, setEmail] = useState("");
 
@@ -48,14 +50,16 @@ const CheckoutPage = () => {
   useEffect(() => {
     const loadPlan = async () => {
       if (!planId) return;
-      const { data } = await supabase
-        .from("vip_plans")
-        .select("id, name, price, period, banner_url")
-        .eq("id", planId)
-        .eq("active", true)
-        .single();
+      const [{ data }, { data: settingsData }] = await Promise.all([
+        supabase.from("vip_plans").select("id, name, price, period, banner_url").eq("id", planId).eq("active", true).single(),
+        supabase.from("settings").select("key, value").in("key", ["group_link", "group_link_label"]),
+      ]);
       if (data) setPlan(data);
       else navigate("/vip");
+      settingsData?.forEach((s) => {
+        if (s.key === "group_link") setGroupLink(s.value);
+        if (s.key === "group_link_label") setGroupLinkLabel(s.value || "Entrar no Grupo VIP");
+      });
       setLoading(false);
     };
     loadPlan();
@@ -218,9 +222,22 @@ const CheckoutPage = () => {
                   </div>
                   <h2 className="text-lg font-display text-foreground mb-1">Pagamento Confirmado!</h2>
                   <p className="text-xs text-muted-foreground mb-4">Seu acesso VIP foi ativado com sucesso.</p>
-                  <Link to="/">
-                    <Button className="bg-primary text-primary-foreground hover:bg-primary/90 text-sm">Acessar Conteúdo VIP</Button>
-                  </Link>
+                  
+                  {groupLink ? (
+                    <div className="space-y-3">
+                      <a href={groupLink} target="_blank" rel="noopener noreferrer">
+                        <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 text-sm h-11 font-bold shadow-glow">
+                          <ExternalLink className="w-4 h-4 mr-2" />
+                          {groupLinkLabel}
+                        </Button>
+                      </a>
+                      <p className="text-[9px] text-muted-foreground">Clique no botão acima para acessar o grupo exclusivo</p>
+                    </div>
+                  ) : (
+                    <Link to="/">
+                      <Button className="bg-primary text-primary-foreground hover:bg-primary/90 text-sm">Acessar Conteúdo VIP</Button>
+                    </Link>
+                  )}
                 </div>
               ) : (
                 <div className="rounded-xl border border-primary/20 bg-card p-4 text-center">
