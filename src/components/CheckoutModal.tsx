@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Crown, Copy, Check, Clock, QrCode, ShieldCheck, ExternalLink, X } from "lucide-react";
+import { Crown, Copy, Check, Clock, QrCode, ShieldCheck, ExternalLink, X, Lock, Users, Zap } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -134,13 +134,13 @@ const CheckoutModal = ({ plan, open, onClose }: CheckoutModalProps) => {
   return (
     <AnimatePresence>
       {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3">
           {/* Overlay */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/85 backdrop-blur-sm"
             onClick={handleClose}
           />
 
@@ -150,44 +150,79 @@ const CheckoutModal = ({ plan, open, onClose }: CheckoutModalProps) => {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.92, y: 20 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="relative w-full max-w-[360px] bg-card border border-border rounded-2xl overflow-hidden shadow-2xl"
+            className="relative w-full max-w-[380px] bg-card border border-border rounded-2xl overflow-hidden shadow-2xl max-h-[92vh] overflow-y-auto"
           >
             {/* Close button */}
             <button
               onClick={handleClose}
-              className="absolute top-3 right-3 z-10 w-7 h-7 rounded-full bg-secondary/80 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+              className="absolute top-3 right-3 z-20 w-7 h-7 rounded-full bg-black/50 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
             >
               <X className="w-3.5 h-3.5" />
             </button>
 
-            {/* Header */}
-            <div className="bg-gradient-to-b from-primary/15 to-transparent px-5 pt-5 pb-3">
-              <div className="flex items-center gap-2 mb-2">
-                <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
-                  <Crown className="w-4 h-4 text-primary" />
-                </div>
-                <div>
-                  <h3 className="text-sm font-bold text-foreground">{plan.name}</h3>
-                  <p className="text-[10px] text-muted-foreground">Acesso completo</p>
-                </div>
+            {/* Banner area */}
+            {plan.banner_url ? (
+              <div className="relative w-full">
+                <img 
+                  src={plan.banner_url} 
+                  alt={plan.name} 
+                  className="w-full object-cover max-h-[160px]" 
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-card via-card/30 to-transparent" />
               </div>
-              <div className="flex items-baseline gap-1">
-                <span className="text-[10px] text-muted-foreground">R$</span>
-                <span className="text-3xl font-display font-bold text-foreground">
-                  {Number(plan.price).toFixed(2).replace(".", ",")}
-                </span>
-                <span className="text-[10px] text-muted-foreground">{periodLabel(plan.period)}</span>
+            ) : (
+              <div className="relative w-full h-[100px] bg-gradient-to-br from-primary/20 via-primary/5 to-transparent">
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Crown className="w-10 h-10 text-primary/30" />
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-card to-transparent" />
+              </div>
+            )}
+
+            {/* Plan info overlay */}
+            <div className="px-5 -mt-6 relative z-10">
+              <div className="flex items-end gap-3 mb-3">
+                <div className="w-11 h-11 rounded-xl bg-card border border-border flex items-center justify-center shadow-lg">
+                  <Crown className="w-5 h-5 text-primary" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-sm font-bold text-foreground leading-tight">{plan.name}</h3>
+                  <div className="flex items-baseline gap-0.5">
+                    <span className="text-[10px] text-muted-foreground">R$</span>
+                    <span className="text-2xl font-display font-bold text-foreground">
+                      {Number(plan.price).toFixed(2).replace(".", ",")}
+                    </span>
+                    <span className="text-[10px] text-muted-foreground">{periodLabel(plan.period)}</span>
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* Divider */}
+            {/* Trust badges */}
+            <div className="px-5 mb-3">
+              <div className="grid grid-cols-3 gap-2">
+                <div className="flex flex-col items-center gap-1 py-2 px-1 rounded-lg bg-secondary/50 border border-border">
+                  <ShieldCheck className="w-4 h-4 text-primary" />
+                  <span className="text-[8px] text-muted-foreground text-center leading-tight">Pagamento<br/>Seguro</span>
+                </div>
+                <div className="flex flex-col items-center gap-1 py-2 px-1 rounded-lg bg-secondary/50 border border-border">
+                  <Zap className="w-4 h-4 text-primary" />
+                  <span className="text-[8px] text-muted-foreground text-center leading-tight">Acesso<br/>Imediato</span>
+                </div>
+                <div className="flex flex-col items-center gap-1 py-2 px-1 rounded-lg bg-secondary/50 border border-border">
+                  <Users className="w-4 h-4 text-primary" />
+                  <span className="text-[8px] text-muted-foreground text-center leading-tight">+10.000<br/>Membros</span>
+                </div>
+              </div>
+            </div>
+
             <div className="h-px bg-border" />
 
             {/* Content */}
             <div className="p-5">
               {!pixData ? (
                 paymentStatus !== "approved" && (
-                  <form onSubmit={handleSubmit} className="space-y-4">
+                  <form onSubmit={handleSubmit} className="space-y-3.5">
                     {/* CPF Field */}
                     <div>
                       <label className="text-[11px] text-muted-foreground font-medium mb-1.5 block">
@@ -226,14 +261,29 @@ const CheckoutModal = ({ plan, open, onClose }: CheckoutModalProps) => {
                           Gerando PIX...
                         </>
                       ) : (
-                        "PAGAR AGORA"
+                        <>
+                          <Lock className="w-3.5 h-3.5 mr-1.5" />
+                          PAGAR AGORA
+                        </>
                       )}
                     </Button>
 
-                    <div className="flex items-center justify-center gap-1.5">
-                      <ShieldCheck className="w-3 h-3 text-muted-foreground" />
-                      <span className="text-[8px] text-muted-foreground">Pagamento seguro • Acesso imediato</span>
+                    {/* Guarantee seal */}
+                    <div className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg border border-primary/20 bg-primary/5">
+                      <div className="flex-shrink-0">
+                        <div className="w-8 h-8 rounded-full border-2 border-primary/40 flex items-center justify-center">
+                          <ShieldCheck className="w-4 h-4 text-primary" />
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-[10px] text-foreground font-semibold">Garantia de 7 dias</p>
+                        <p className="text-[8px] text-muted-foreground">Não gostou? Devolvemos 100% do valor.</p>
+                      </div>
                     </div>
+
+                    <p className="text-[7px] text-muted-foreground text-center">
+                      Seus dados estão protegidos • Criptografia SSL 256-bit
+                    </p>
                   </form>
                 )
               ) : paymentStatus === "approved" ? (
