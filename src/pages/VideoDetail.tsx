@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import { Crown, Eye, Clock, ArrowLeft, Lock } from "lucide-react";
+import { Crown, Eye, Clock, ArrowLeft, Lock, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Navbar from "@/components/Navbar";
 import VideoGrid from "@/components/VideoGrid";
