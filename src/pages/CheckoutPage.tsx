@@ -214,6 +214,21 @@ const CheckoutPage = () => {
                 <p className="text-[8px] text-muted-foreground mt-1">Enviaremos o acesso para este e-mail</p>
               </div>
 
+              {/* CPF */}
+              <div className="rounded-lg border border-border bg-card p-3">
+                <label className="text-[11px] text-muted-foreground mb-1.5 block">CPF</label>
+                <Input
+                  type="text"
+                  inputMode="numeric"
+                  value={cpf}
+                  onChange={(e) => setCpf(e.target.value.replace(/\D/g, "").slice(0, 11))}
+                  placeholder="00000000000"
+                  className="bg-secondary border-border text-sm h-9"
+                  required
+                />
+                <p className="text-[8px] text-muted-foreground mt-1">Necessário para processar o pagamento</p>
+              </div>
+
               {/* Botão pagar */}
               <Button
                 type="submit"
