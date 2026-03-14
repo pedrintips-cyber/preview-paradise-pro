@@ -98,12 +98,13 @@ const VipPage = () => {
                 </div>
 
                 {/* CTA */}
-                <Link to={`/checkout/${plan.id}`}>
-                  <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 text-sm font-bold h-11 rounded-lg">
-                    <Lock className="w-3.5 h-3.5 mr-1.5" />
-                    ASSINAR AGORA
-                  </Button>
-                </Link>
+                <Button
+                  onClick={() => setCheckoutOpen(true)}
+                  className="w-full bg-primary text-primary-foreground hover:bg-primary/90 text-sm font-bold h-11 rounded-lg"
+                >
+                  <Lock className="w-3.5 h-3.5 mr-1.5" />
+                  ASSINAR AGORA
+                </Button>
 
                 <div className="flex items-center justify-center gap-1.5 mt-3">
                   <ShieldCheck className="w-3 h-3 text-muted-foreground" />
