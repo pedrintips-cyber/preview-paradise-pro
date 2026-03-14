@@ -55,12 +55,13 @@ const AdminVideos = () => {
 
   useEffect(() => { loadData(); }, []);
 
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>, field: "video_url" | "thumbnail_url") => {
     const file = e.target.files?.[0];
     if (!file) return;
-    setUploading("video_url");
+    setUploading(field);
     const ext = file.name.split(".").pop();
-    const path = `videos/${Date.now()}.${ext}`;
+    const folder = field === "thumbnail_url" ? "thumbnails" : "videos";
+    const path = `${folder}/${Date.now()}.${ext}`;
     const { error } = await supabase.storage.from("media").upload(path, file);
     if (error) {
       toast({ title: "Erro no upload", description: error.message, variant: "destructive" });
@@ -68,7 +69,7 @@ const AdminVideos = () => {
       return;
     }
     const { data: { publicUrl } } = supabase.storage.from("media").getPublicUrl(path);
-    setForm((f) => ({ ...f, video_url: publicUrl }));
+    setForm((f) => ({ ...f, [field]: publicUrl }));
     setUploading(null);
   };
 
@@ -178,9 +179,17 @@ const AdminVideos = () => {
           </div>
 
           <div>
-            <input type="file" accept="video/*" onChange={(e) => handleUpload(e)} className="text-xs text-muted-foreground" />
+            <label className="text-xs text-muted-foreground block mb-1">Thumbnail (opcional)</label>
+            <input type="file" accept="image/*" onChange={(e) => handleUpload(e, "thumbnail_url")} className="text-xs text-muted-foreground" />
+            {uploading === "thumbnail_url" && <span className="text-xs text-primary ml-2">Enviando...</span>}
+            {form.thumbnail_url && <p className="text-[10px] text-primary mt-1">✓ Thumbnail carregada</p>}
+          </div>
+
+          <div>
+            <label className="text-xs text-muted-foreground block mb-1">Vídeo</label>
+            <input type="file" accept="video/*" onChange={(e) => handleUpload(e, "video_url")} className="text-xs text-muted-foreground" />
             {uploading === "video_url" && <span className="text-xs text-primary ml-2">Enviando...</span>}
-            {form.video_url && <p className="text-[10px] text-green-400 mt-1">✓ Vídeo carregado</p>}
+            {form.video_url && <p className="text-[10px] text-primary mt-1">✓ Vídeo carregado</p>}
           </div>
 
           <label className="flex items-center gap-2 text-xs text-foreground cursor-pointer">
@@ -198,7 +207,9 @@ const AdminVideos = () => {
       <div className="space-y-2">
         {videos.map((video) => (
           <div key={video.id} className="flex items-center gap-3 bg-card border border-border rounded-lg p-3">
-            {video.video_url ? (
+            {video.thumbnail_url ? (
+              <img src={video.thumbnail_url} alt="" className="w-20 h-12 rounded object-cover flex-shrink-0 bg-black" />
+            ) : video.video_url ? (
               <video src={video.video_url} muted preload="metadata" className="w-20 h-12 rounded object-cover flex-shrink-0 bg-black" />
             ) : (
               <div className="w-20 h-12 rounded bg-muted flex-shrink-0" />
