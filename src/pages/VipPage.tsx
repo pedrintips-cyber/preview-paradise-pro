@@ -52,6 +52,7 @@ const VipPage = () => {
       <Navbar />
       <main className="pt-12 md:pt-14">
         {plan ? (
+          <>
           <div className="px-4 md:px-8 pt-6 pb-8">
             <div className="max-w-sm mx-auto">
               {/* Banner do plano */}
