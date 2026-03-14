@@ -137,42 +137,31 @@ const VideoDetail = () => {
 
         {/* VIP CTA */}
         <div className="mx-3 md:mx-8 mb-5">
-          <div className="relative rounded-xl overflow-hidden border border-primary/25 bg-gradient-to-br from-card via-card to-primary/5">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/8 rounded-full blur-[60px] -translate-y-1/2 translate-x-1/2" />
-            <div className="relative p-4 md:p-5">
-              <div className="flex items-start gap-3 mb-3">
-                <div className="w-10 h-10 rounded-xl bg-primary/15 border border-primary/20 flex items-center justify-center flex-shrink-0">
-                  <Crown className="w-5 h-5 text-primary" />
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-display text-foreground tracking-wide">ACESSO VIP</p>
-                  <p className="text-[10px] text-muted-foreground">Todos os vídeos por apenas {vipLabel}</p>
-                </div>
+          <div className="rounded-lg border border-border bg-card p-3">
+            <div className="flex items-center gap-2.5 mb-2.5">
+              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <Crown className="w-4 h-4 text-primary" />
               </div>
-
-              <div className="grid grid-cols-2 gap-1.5 mb-4">
-                {[
-                  "Vídeos exclusivos",
-                  "Novos toda semana", 
-                  "Sem anúncios",
-                  "Cancele quando quiser",
-                ].map((item, i) => (
-                  <div key={i} className="flex items-center gap-1.5">
-                    <div className="w-3.5 h-3.5 rounded-full bg-primary/15 flex items-center justify-center flex-shrink-0">
-                      <Lock className="w-2 h-2 text-primary" />
-                    </div>
-                    <span className="text-[10px] text-muted-foreground">{item}</span>
-                  </div>
-                ))}
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-semibold text-foreground">Acesso VIP</p>
+                <p className="text-[9px] text-muted-foreground">Todos os vídeos por {vipLabel}</p>
               </div>
-
-              <Link to="/vip" className="block">
-                <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 text-sm h-10 font-bold rounded-lg shadow-glow">
-                  <Crown className="w-3.5 h-3.5 mr-1.5" />
-                  QUERO SER VIP — {vipLabel}
-                </Button>
-              </Link>
             </div>
+
+            <div className="flex flex-wrap gap-x-3 gap-y-1 mb-3 pl-0.5">
+              {["Vídeos exclusivos", "Sem anúncios", "Novos toda semana"].map((item, i) => (
+                <span key={i} className="text-[9px] text-muted-foreground flex items-center gap-1">
+                  <Check className="w-2.5 h-2.5 text-primary" />
+                  {item}
+                </span>
+              ))}
+            </div>
+
+            <Link to="/vip" className="block">
+              <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 text-xs h-9 font-bold rounded-md">
+                QUERO SER VIP — {vipLabel}
+              </Button>
+            </Link>
           </div>
         </div>
 
