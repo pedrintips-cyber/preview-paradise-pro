@@ -14,6 +14,7 @@ const VideoDetail = () => {
   const [related, setRelated] = useState<DBVideo[]>([]);
   const [loading, setLoading] = useState(true);
   const [vipLabel, setVipLabel] = useState("R$29,90/ano");
+  const { openCheckout } = useCheckout();
 
   useEffect(() => {
     const load = async () => {
