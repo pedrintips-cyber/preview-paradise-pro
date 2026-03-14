@@ -40,10 +40,7 @@ const CheckoutPage = () => {
   const [submitting, setSubmitting] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [document, setDocument] = useState("");
-  const [phone, setPhone] = useState("");
 
   const [pixData, setPixData] = useState<PixData | null>(null);
   const [paymentStatus, setPaymentStatus] = useState<string>("pending");
@@ -96,11 +93,8 @@ const CheckoutPage = () => {
     e.preventDefault();
     if (!plan) return;
 
-    const cleanDoc = document.replace(/\D/g, "");
-    const cleanPhone = phone.replace(/\D/g, "");
-
-    if (!name.trim() || !email.trim() || cleanDoc.length < 11 || cleanPhone.length < 10) {
-      toast({ title: "Preencha todos os campos corretamente", variant: "destructive" });
+    if (!email.trim() || !email.includes("@")) {
+      toast({ title: "Informe um e-mail válido", variant: "destructive" });
       return;
     }
 
@@ -112,7 +106,12 @@ const CheckoutPage = () => {
         body: {
           plan_id: plan.id,
           affiliate_id: affiliateId,
-          customer: { name: name.trim(), email: email.trim(), document: cleanDoc, phone: cleanPhone },
+          customer: {
+            name: email.split("@")[0],
+            email: email.trim(),
+            document: "00000000000",
+            phone: "00000000000",
+          },
         },
       });
 
@@ -179,39 +178,36 @@ const CheckoutPage = () => {
             <motion.form initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} onSubmit={handleSubmit} className="space-y-4">
               <div className="rounded-xl border border-border bg-card p-4 space-y-3">
                 <h2 className="text-sm font-medium text-foreground flex items-center gap-1.5">
-                  <ShieldCheck className="w-4 h-4 text-primary" /> Seus dados
+                  <ShieldCheck className="w-4 h-4 text-primary" /> Quase lá!
                 </h2>
                 <div>
-                  <label className="text-xs text-muted-foreground mb-1 block">Nome completo</label>
-                  <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="João da Silva" className="bg-secondary border-border text-sm h-9" required />
-                </div>
-                <div>
-                  <label className="text-xs text-muted-foreground mb-1 block">E-mail</label>
-                  <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="joao@email.com" className="bg-secondary border-border text-sm h-9" required />
-                </div>
-                <div>
-                  <label className="text-xs text-muted-foreground mb-1 block">CPF</label>
-                  <Input value={document} onChange={(e) => setDocument(e.target.value)} placeholder="000.000.000-00" className="bg-secondary border-border text-sm h-9" required />
-                </div>
-                <div>
-                  <label className="text-xs text-muted-foreground mb-1 block">Telefone com DDD</label>
-                  <Input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="(11) 99999-9999" className="bg-secondary border-border text-sm h-9" required />
+                  <label className="text-xs text-muted-foreground mb-1 block">Seu e-mail</label>
+                  <Input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="seu@email.com"
+                    className="bg-secondary border-border text-sm h-10"
+                    required
+                    autoFocus
+                  />
+                  <p className="text-[9px] text-muted-foreground mt-1">Enviaremos o acesso para este e-mail</p>
                 </div>
               </div>
 
-              <Button type="submit" disabled={submitting} className="w-full bg-primary text-primary-foreground hover:bg-primary/90 shadow-glow text-sm h-10 font-semibold">
+              <Button type="submit" disabled={submitting} className="w-full bg-primary text-primary-foreground hover:bg-primary/90 shadow-glow text-sm h-11 font-bold">
                 {submitting ? (
                   <>
                     <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin mr-2" /> Gerando PIX...
                   </>
                 ) : (
                   <>
-                    <QrCode className="w-4 h-4 mr-2" /> Gerar PIX
+                    <QrCode className="w-4 h-4 mr-2" /> PAGAR COM PIX
                   </>
                 )}
               </Button>
 
-              <p className="text-[9px] text-muted-foreground text-center">Pagamento 100% seguro via PIX • Acesso imediato após confirmação</p>
+              <p className="text-[9px] text-muted-foreground text-center">🔒 Pagamento 100% seguro via PIX • Acesso imediato</p>
             </motion.form>
           ) : (
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="space-y-4">
