@@ -3,10 +3,10 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { CheckoutProvider } from "@/contexts/CheckoutContext";
 import Index from "./pages/Index.tsx";
 import VideoDetail from "./pages/VideoDetail.tsx";
 import CategoryPage from "./pages/CategoryPage.tsx";
-import VipPage from "./pages/VipPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import AdminLogin from "./pages/admin/AdminLogin.tsx";
 import AdminLayout from "./pages/admin/AdminLayout.tsx";
@@ -18,14 +18,12 @@ import AdminVipPlans from "./pages/admin/AdminVipPlans.tsx";
 import AdminSettings from "./pages/admin/AdminSettings.tsx";
 import AdminAffiliates from "./pages/admin/AdminAffiliates.tsx";
 import AdminSections from "./pages/admin/AdminSections.tsx";
-import CheckoutPage from "./pages/CheckoutPage.tsx";
 import AffiliateLogin from "./pages/affiliate/AffiliateLogin.tsx";
 import AffiliateLayout from "./pages/affiliate/AffiliateLayout.tsx";
 import AffiliateDashboard from "./pages/affiliate/AffiliateDashboard.tsx";
 import AffiliateLink from "./pages/affiliate/AffiliateLink.tsx";
 import AffiliateSales from "./pages/affiliate/AffiliateSales.tsx";
 import AffiliateHistory from "./pages/affiliate/AffiliateHistory.tsx";
-
 import AffiliateWallet from "./pages/affiliate/AffiliateWallet.tsx";
 import AffiliateGateway from "./pages/affiliate/AffiliateGateway.tsx";
 import AffiliateSettings from "./pages/affiliate/AffiliateSettings.tsx";
@@ -39,37 +37,36 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <AffiliateTracker />
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/video/:id" element={<VideoDetail />} />
-          <Route path="/categoria/:slug" element={<CategoryPage />} />
-          <Route path="/vip" element={<VipPage />} />
-          <Route path="/checkout/:planId" element={<CheckoutPage />} />
-          <Route path="/admin/login" element={<AdminLogin />} />
-          <Route path="/admin" element={<AdminLayout />}>
-            <Route index element={<AdminDashboard />} />
-            <Route path="banners" element={<AdminBanners />} />
-            <Route path="divisorias" element={<AdminSections />} />
-            <Route path="categorias" element={<AdminCategories />} />
-            <Route path="videos" element={<AdminVideos />} />
-            <Route path="vip" element={<AdminVipPlans />} />
-            <Route path="afiliados" element={<AdminAffiliates />} />
-            <Route path="config" element={<AdminSettings />} />
-          </Route>
-          <Route path="/afiliado/login" element={<AffiliateLogin />} />
-          <Route path="/afiliado" element={<AffiliateLayout />}>
-            <Route index element={<AffiliateDashboard />} />
-            <Route path="link" element={<AffiliateLink />} />
-            <Route path="vendas" element={<AffiliateSales />} />
-            <Route path="historico" element={<AffiliateHistory />} />
-            
-            <Route path="carteira" element={<AffiliateWallet />} />
-            <Route path="gateway" element={<AffiliateGateway />} />
-            <Route path="config" element={<AffiliateSettings />} />
-          </Route>
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <CheckoutProvider>
+          <AffiliateTracker />
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/video/:id" element={<VideoDetail />} />
+            <Route path="/categoria/:slug" element={<CategoryPage />} />
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="banners" element={<AdminBanners />} />
+              <Route path="divisorias" element={<AdminSections />} />
+              <Route path="categorias" element={<AdminCategories />} />
+              <Route path="videos" element={<AdminVideos />} />
+              <Route path="vip" element={<AdminVipPlans />} />
+              <Route path="afiliados" element={<AdminAffiliates />} />
+              <Route path="config" element={<AdminSettings />} />
+            </Route>
+            <Route path="/afiliado/login" element={<AffiliateLogin />} />
+            <Route path="/afiliado" element={<AffiliateLayout />}>
+              <Route index element={<AffiliateDashboard />} />
+              <Route path="link" element={<AffiliateLink />} />
+              <Route path="vendas" element={<AffiliateSales />} />
+              <Route path="historico" element={<AffiliateHistory />} />
+              <Route path="carteira" element={<AffiliateWallet />} />
+              <Route path="gateway" element={<AffiliateGateway />} />
+              <Route path="config" element={<AffiliateSettings />} />
+            </Route>
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </CheckoutProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

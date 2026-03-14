@@ -157,11 +157,9 @@ const VideoDetail = () => {
               ))}
             </div>
 
-            <Link to="/vip" className="block">
-              <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 text-xs h-9 font-bold rounded-md">
-                QUERO SER VIP — {vipLabel}
-              </Button>
-            </Link>
+            <Button onClick={openCheckout} className="w-full bg-primary text-primary-foreground hover:bg-primary/90 text-xs h-9 font-bold rounded-md">
+              QUERO SER VIP — {vipLabel}
+            </Button>
           </div>
         </div>
 
