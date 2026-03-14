@@ -55,12 +55,13 @@ const AdminVideos = () => {
 
   useEffect(() => { loadData(); }, []);
 
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>, field: "video_url" | "thumbnail_url") => {
     const file = e.target.files?.[0];
     if (!file) return;
-    setUploading("video_url");
+    setUploading(field);
     const ext = file.name.split(".").pop();
-    const path = `videos/${Date.now()}.${ext}`;
+    const folder = field === "thumbnail_url" ? "thumbnails" : "videos";
+    const path = `${folder}/${Date.now()}.${ext}`;
     const { error } = await supabase.storage.from("media").upload(path, file);
     if (error) {
       toast({ title: "Erro no upload", description: error.message, variant: "destructive" });
@@ -68,7 +69,7 @@ const AdminVideos = () => {
       return;
     }
     const { data: { publicUrl } } = supabase.storage.from("media").getPublicUrl(path);
-    setForm((f) => ({ ...f, video_url: publicUrl }));
+    setForm((f) => ({ ...f, [field]: publicUrl }));
     setUploading(null);
   };
 
