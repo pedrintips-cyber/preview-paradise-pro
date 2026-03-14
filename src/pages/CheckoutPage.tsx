@@ -222,9 +222,22 @@ const CheckoutPage = () => {
                   </div>
                   <h2 className="text-lg font-display text-foreground mb-1">Pagamento Confirmado!</h2>
                   <p className="text-xs text-muted-foreground mb-4">Seu acesso VIP foi ativado com sucesso.</p>
-                  <Link to="/">
-                    <Button className="bg-primary text-primary-foreground hover:bg-primary/90 text-sm">Acessar Conteúdo VIP</Button>
-                  </Link>
+                  
+                  {groupLink ? (
+                    <div className="space-y-3">
+                      <a href={groupLink} target="_blank" rel="noopener noreferrer">
+                        <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 text-sm h-11 font-bold shadow-glow">
+                          <ExternalLink className="w-4 h-4 mr-2" />
+                          {groupLinkLabel}
+                        </Button>
+                      </a>
+                      <p className="text-[9px] text-muted-foreground">Clique no botão acima para acessar o grupo exclusivo</p>
+                    </div>
+                  ) : (
+                    <Link to="/">
+                      <Button className="bg-primary text-primary-foreground hover:bg-primary/90 text-sm">Acessar Conteúdo VIP</Button>
+                    </Link>
+                  )}
                 </div>
               ) : (
                 <div className="rounded-xl border border-primary/20 bg-card p-4 text-center">
