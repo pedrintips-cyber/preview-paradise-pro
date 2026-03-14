@@ -81,7 +81,7 @@ const VideoDetail = () => {
       <Navbar />
       <main className="pt-12 md:pt-14">
         {/* Video Player */}
-        <div className="relative w-full aspect-video max-h-[40vh] md:max-h-[60vh] bg-black overflow-hidden">
+        <div className="relative w-full aspect-video bg-black overflow-hidden">
           {video.video_url && !video.is_vip ? (
             <video src={video.video_url} controls className="w-full h-full object-contain bg-black" />
           ) : (
