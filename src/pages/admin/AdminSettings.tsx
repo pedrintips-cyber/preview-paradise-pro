@@ -76,6 +76,29 @@ const AdminSettings = () => {
           </div>
         </div>
 
+        <div className="bg-card border border-border rounded-lg p-4 space-y-3">
+          <h3 className="text-sm font-medium text-foreground">Entregável (Pós-Pagamento)</h3>
+          <p className="text-[10px] text-muted-foreground">Link que será exibido ao cliente após a confirmação do pagamento (ex: grupo do WhatsApp/Telegram).</p>
+          <div>
+            <label className="text-xs text-muted-foreground mb-1 block">Link do grupo</label>
+            <Input
+              value={settings.group_link || ""}
+              onChange={(e) => setSettings({ ...settings, group_link: e.target.value })}
+              placeholder="https://chat.whatsapp.com/..."
+              className="bg-secondary border-border text-sm h-9"
+            />
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground mb-1 block">Texto do botão</label>
+            <Input
+              value={settings.group_link_label || ""}
+              onChange={(e) => setSettings({ ...settings, group_link_label: e.target.value })}
+              placeholder="Entrar no Grupo VIP"
+              className="bg-secondary border-border text-sm h-9"
+            />
+          </div>
+        </div>
+
         <Button onClick={handleSave} disabled={saving} className="bg-primary text-primary-foreground hover:bg-primary/90 text-xs h-9">
           <Save className="w-3.5 h-3.5 mr-1.5" />
           {saving ? "Salvando..." : "Salvar Configurações"}
