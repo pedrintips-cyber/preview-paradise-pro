@@ -50,14 +50,16 @@ const CheckoutPage = () => {
   useEffect(() => {
     const loadPlan = async () => {
       if (!planId) return;
-      const { data } = await supabase
-        .from("vip_plans")
-        .select("id, name, price, period, banner_url")
-        .eq("id", planId)
-        .eq("active", true)
-        .single();
+      const [{ data }, { data: settingsData }] = await Promise.all([
+        supabase.from("vip_plans").select("id, name, price, period, banner_url").eq("id", planId).eq("active", true).single(),
+        supabase.from("settings").select("key, value").in("key", ["group_link", "group_link_label"]),
+      ]);
       if (data) setPlan(data);
       else navigate("/vip");
+      settingsData?.forEach((s) => {
+        if (s.key === "group_link") setGroupLink(s.value);
+        if (s.key === "group_link_label") setGroupLinkLabel(s.value || "Entrar no Grupo VIP");
+      });
       setLoading(false);
     };
     loadPlan();
