@@ -23,6 +23,7 @@ const periodLabel = (p: string) => {
 const VipPage = () => {
   const [plan, setPlan] = useState<DBVipPlan | null>(null);
   const [loading, setLoading] = useState(true);
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
 
   useEffect(() => {
     const load = async () => {
