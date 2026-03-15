@@ -38,7 +38,7 @@ const VideoCard = ({ video, index = 0 }: VideoCardProps) => {
           )}
 
           {/* Simple dark gradient at bottom for text */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-transparent to-transparent" />
 
           {/* VIP badge */}
           {video.is_vip && (
