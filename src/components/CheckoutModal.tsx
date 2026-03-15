@@ -150,7 +150,7 @@ const CheckoutModal = ({ plan, open, onClose }: CheckoutModalProps) => {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.92, y: 20 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="relative w-full max-w-[380px] bg-card border border-border rounded-2xl overflow-hidden shadow-2xl max-h-[92vh] overflow-y-auto"
+            className="relative w-full max-w-[380px] bg-card border-2 border-border rounded-3xl overflow-hidden shadow-2xl max-h-[92vh] overflow-y-auto"
           >
             {/* Close button */}
             <button
