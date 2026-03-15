@@ -46,7 +46,7 @@ const Navbar = () => {
               {cat.name}
             </Link>
           ))}
-          <Button onClick={() => { openCheckout(); setMenuOpen(false); }} size="sm" className="w-full mt-2 bg-primary text-primary-foreground text-[10px] h-7">
+          <Button onClick={() => { openCheckout(); setMenuOpen(false); }} size="sm" className="w-full mt-2 bg-primary text-primary-foreground text-[10px] h-8 rounded-full shadow-cartoon">
             <Crown className="w-3 h-3 mr-1" />
             Seja VIP
           </Button>

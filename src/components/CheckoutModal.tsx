@@ -269,7 +269,7 @@ const CheckoutModal = ({ plan, open, onClose }: CheckoutModalProps) => {
                     </Button>
 
                     {/* Guarantee seal */}
-                    <div className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg border border-primary/20 bg-primary/5">
+                    <div className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-2xl border-2 border-primary/20 bg-primary/5">
                       <div className="flex-shrink-0">
                         <div className="w-8 h-8 rounded-full border-2 border-primary/40 flex items-center justify-center">
                           <ShieldCheck className="w-4 h-4 text-primary" />

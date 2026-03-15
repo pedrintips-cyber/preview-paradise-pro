@@ -107,10 +107,10 @@ const HeroBanner = () => {
       {/* Navigation arrows */}
       {banners.length > 1 && (
         <>
-          <button onClick={prev} className="absolute left-2 top-1/2 -translate-y-1/2 z-10 p-2 md:p-3 rounded-full bg-background/40 hover:bg-background/70 backdrop-blur-sm text-foreground transition-all border border-border/30">
+          <button onClick={prev} className="absolute left-2 top-1/2 -translate-y-1/2 z-10 p-2 md:p-3 rounded-full bg-card/80 hover:bg-card backdrop-blur-sm text-foreground transition-all border-2 border-border shadow-cartoon active:translate-y-[1px] active:shadow-none">
             <ChevronLeft className="w-4 h-4 md:w-5 md:h-5" />
           </button>
-          <button onClick={next} className="absolute right-2 top-1/2 -translate-y-1/2 z-10 p-2 md:p-3 rounded-full bg-background/40 hover:bg-background/70 backdrop-blur-sm text-foreground transition-all border border-border/30">
+          <button onClick={next} className="absolute right-2 top-1/2 -translate-y-1/2 z-10 p-2 md:p-3 rounded-full bg-card/80 hover:bg-card backdrop-blur-sm text-foreground transition-all border-2 border-border shadow-cartoon active:translate-y-[1px] active:shadow-none">
             <ChevronRight className="w-4 h-4 md:w-5 md:h-5" />
           </button>
           {/* Dots */}

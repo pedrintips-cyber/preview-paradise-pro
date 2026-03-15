@@ -46,14 +46,14 @@ const VideoGrid = ({ videos, title }: VideoGridProps) => {
           <button
             onClick={() => scroll("left")}
             disabled={!canScrollLeft}
-            className="p-2 rounded-full bg-secondary/80 hover:bg-secondary text-foreground transition-all disabled:opacity-30 disabled:cursor-default"
+            className="p-2 rounded-full bg-card border-2 border-border hover:border-primary/40 text-foreground transition-all disabled:opacity-30 disabled:cursor-default shadow-cartoon active:translate-y-[1px] active:shadow-none"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
           <button
             onClick={() => scroll("right")}
             disabled={!canScrollRight}
-            className="p-2 rounded-full bg-secondary/80 hover:bg-secondary text-foreground transition-all disabled:opacity-30 disabled:cursor-default"
+            className="p-2 rounded-full bg-card border-2 border-border hover:border-primary/40 text-foreground transition-all disabled:opacity-30 disabled:cursor-default shadow-cartoon active:translate-y-[1px] active:shadow-none"
           >
             <ChevronRight className="w-5 h-5" />
           </button>
