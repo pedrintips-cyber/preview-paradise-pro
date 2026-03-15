@@ -94,7 +94,7 @@ const HeroBanner = () => {
                 Assistir
               </Button>
               {banner.is_vip && (
-                <Button onClick={openCheckout} variant="outline" className="border-primary/40 text-primary hover:bg-primary/10 text-xs md:text-sm h-9 md:h-11 px-4 md:px-6 rounded-lg font-semibold">
+                <Button onClick={openCheckout} variant="outline" className="border-2 border-primary/40 text-primary hover:bg-primary/10 text-xs md:text-sm h-10 md:h-12 px-5 md:px-7 rounded-full font-bold shadow-cartoon">
                   <Crown className="w-4 h-4 mr-1.5" />
                   Seja VIP
                 </Button>
