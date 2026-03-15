@@ -140,7 +140,7 @@ const CheckoutModal = ({ plan, open, onClose }: CheckoutModalProps) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-black/85 backdrop-blur-sm"
+            className="absolute inset-0 bg-foreground/85 backdrop-blur-sm"
             onClick={handleClose}
           />
 
@@ -155,7 +155,7 @@ const CheckoutModal = ({ plan, open, onClose }: CheckoutModalProps) => {
             {/* Close button */}
             <button
               onClick={handleClose}
-              className="absolute top-3 right-3 z-20 w-7 h-7 rounded-full bg-black/50 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+              className="absolute top-3 right-3 z-20 w-7 h-7 rounded-full bg-foreground/50 flex items-center justify-center text-background hover:text-background/80 transition-colors"
             >
               <X className="w-3.5 h-3.5" />
             </button>

@@ -38,7 +38,7 @@ const VideoCard = ({ video, index = 0 }: VideoCardProps) => {
           )}
 
           {/* Simple dark gradient at bottom for text */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-transparent to-transparent" />
 
           {/* VIP badge */}
           {video.is_vip && (
@@ -52,10 +52,10 @@ const VideoCard = ({ video, index = 0 }: VideoCardProps) => {
 
           {/* Bottom info */}
           <div className="absolute bottom-0 inset-x-0 p-2">
-            <h3 className="font-body font-medium text-[11px] text-primary-foreground line-clamp-2 leading-snug mb-1">
+            <h3 className="font-body font-medium text-[11px] text-background line-clamp-2 leading-snug mb-1">
               {video.title}
             </h3>
-            <div className="flex items-center gap-1 text-primary-foreground/60 text-[9px]">
+            <div className="flex items-center gap-1 text-background/60 text-[9px]">
               <Eye className="w-2.5 h-2.5" />
               <span>{formatViews(video.views || 0)}</span>
               {video.duration && (
