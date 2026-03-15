@@ -75,11 +75,11 @@ const VideoCard = ({ video, index = 0 }: VideoCardProps) => {
         </Link>
 
         {/* Action buttons */}
-        <div className="flex gap-1.5 p-1.5">
+        <div className="flex gap-2 p-2">
           <Link to={`/video/${video.id}`} className="flex-1 min-w-0">
             <Button
               size="sm"
-              className="w-full h-8 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 text-[10px] font-semibold px-2 whitespace-nowrap truncate"
+              className="w-full h-10 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 text-sm font-semibold px-3 whitespace-nowrap truncate"
             >
               Ver mais
             </Button>
@@ -90,7 +90,7 @@ const VideoCard = ({ video, index = 0 }: VideoCardProps) => {
               e.stopPropagation();
               openCheckout();
             }}
-            className="flex-1 min-w-0 h-8 rounded-lg bg-success text-success-foreground hover:bg-success/90 text-[10px] font-semibold px-2 whitespace-nowrap truncate"
+            className="flex-1 min-w-0 h-10 rounded-xl bg-success text-success-foreground hover:bg-success/90 text-sm font-semibold px-3 whitespace-nowrap truncate"
           >
             Assinar
           </Button>

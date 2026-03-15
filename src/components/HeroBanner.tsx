@@ -79,11 +79,8 @@ const HeroBanner = () => {
               exit={{ opacity: 0, y: -15 }}
               transition={{ duration: 0.4, delay: 0.2 }}
             >
-              <span className="inline-flex items-center px-3 py-1 rounded-full bg-primary text-primary-foreground text-[10px] md:text-xs font-black tracking-[0.2em] uppercase mb-2 md:mb-3 shadow-glow">
-                PROGRAMAÇÃO
-              </span>
               {banner.is_vip && (
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gradient-vip text-gold-foreground text-[10px] md:text-xs font-bold mb-2 md:mb-3 shadow-gold tracking-wider ml-2">
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gradient-vip text-gold-foreground text-[10px] md:text-xs font-bold mb-2 md:mb-3 shadow-gold tracking-wider">
                   <Crown className="w-3 h-3 md:w-3.5 md:h-3.5" />
                   CONTEÚDO VIP
                 </span>
