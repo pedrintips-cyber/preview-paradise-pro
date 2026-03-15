@@ -52,7 +52,7 @@ const VideoCard = ({ video, index = 0 }: VideoCardProps) => {
 
           {/* Bottom info */}
           <div className="absolute bottom-0 inset-x-0 p-2">
-            <h3 className="font-body font-medium text-[11px] text-primary-foreground line-clamp-2 leading-snug mb-1">
+            <h3 className="font-body font-medium text-[11px] text-background line-clamp-2 leading-snug mb-1">
               {video.title}
             </h3>
             <div className="flex items-center gap-1 text-primary-foreground/60 text-[9px]">
