@@ -241,7 +241,7 @@ const CheckoutModal = ({ plan, open, onClose }: CheckoutModalProps) => {
                     </div>
 
                     {/* Payment method indicator */}
-                    <div className="flex items-center gap-2 py-2 px-3 rounded-lg bg-secondary/50 border border-border">
+                    <div className="flex items-center gap-2 py-2 px-3 rounded-2xl bg-secondary/50 border-2 border-border">
                       <QrCode className="w-4 h-4 text-primary flex-shrink-0" />
                       <div>
                         <p className="text-[11px] text-foreground font-medium">Pagamento via PIX</p>
