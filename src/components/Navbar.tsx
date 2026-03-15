@@ -40,7 +40,7 @@ const Navbar = () => {
       </div>
 
       {menuOpen && (
-        <div className="md:hidden bg-card border-b border-border px-3 pb-3">
+        <div className="md:hidden bg-card border-b-2 border-border px-3 pb-3 shadow-card">
           {categories.map((cat) => (
             <Link key={cat.id} to={`/categoria/${cat.slug}`} onClick={() => setMenuOpen(false)} className="block py-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
               {cat.name}
