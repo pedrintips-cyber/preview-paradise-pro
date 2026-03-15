@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Crown, Eye, Play, ShoppingCart } from "lucide-react";
+import { Crown, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCheckout } from "@/contexts/CheckoutContext";
 import type { DBVideo } from "@/types/database";
