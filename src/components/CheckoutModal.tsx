@@ -201,17 +201,17 @@ const CheckoutModal = ({ plan, open, onClose }: CheckoutModalProps) => {
             {/* Trust badges */}
             <div className="px-5 mb-3">
               <div className="grid grid-cols-3 gap-2">
-                <div className="flex flex-col items-center gap-1 py-2 px-1 rounded-lg bg-secondary/50 border border-border">
+                <div className="flex flex-col items-center gap-1 py-2 px-1 rounded-2xl bg-secondary/50 border-2 border-border shadow-card">
                   <ShieldCheck className="w-4 h-4 text-primary" />
-                  <span className="text-[8px] text-muted-foreground text-center leading-tight">Pagamento<br/>Seguro</span>
+                  <span className="text-[8px] text-muted-foreground text-center leading-tight font-bold">Pagamento<br/>Seguro</span>
                 </div>
-                <div className="flex flex-col items-center gap-1 py-2 px-1 rounded-lg bg-secondary/50 border border-border">
+                <div className="flex flex-col items-center gap-1 py-2 px-1 rounded-2xl bg-secondary/50 border-2 border-border shadow-card">
                   <Zap className="w-4 h-4 text-primary" />
-                  <span className="text-[8px] text-muted-foreground text-center leading-tight">Acesso<br/>Imediato</span>
+                  <span className="text-[8px] text-muted-foreground text-center leading-tight font-bold">Acesso<br/>Imediato</span>
                 </div>
-                <div className="flex flex-col items-center gap-1 py-2 px-1 rounded-lg bg-secondary/50 border border-border">
+                <div className="flex flex-col items-center gap-1 py-2 px-1 rounded-2xl bg-secondary/50 border-2 border-border shadow-card">
                   <Users className="w-4 h-4 text-primary" />
-                  <span className="text-[8px] text-muted-foreground text-center leading-tight">+10.000<br/>Membros</span>
+                  <span className="text-[8px] text-muted-foreground text-center leading-tight font-bold">+10.000<br/>Membros</span>
                 </div>
               </div>
             </div>
