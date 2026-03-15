@@ -103,6 +103,10 @@
     background: var(--gradient-red);
   }
 
+  .bg-gradient-btn {
+    background: var(--gradient-btn);
+  }
+
   .shadow-glow {
     box-shadow: var(--shadow-glow);
   }
@@ -113,6 +117,14 @@
 
   .shadow-red {
     box-shadow: var(--shadow-red);
+  }
+
+  .shadow-cartoon {
+    box-shadow: var(--shadow-cartoon);
+  }
+
+  .shadow-card {
+    box-shadow: var(--shadow-card);
   }
 
   .scrollbar-hide {
