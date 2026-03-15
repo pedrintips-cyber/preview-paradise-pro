@@ -234,7 +234,7 @@ const CheckoutModal = ({ plan, open, onClose }: CheckoutModalProps) => {
                         value={formatCpf(cpf)}
                         onChange={(e) => setCpf(e.target.value.replace(/\D/g, "").slice(0, 11))}
                         placeholder="000.000.000-00"
-                        className="bg-secondary border-border text-sm h-10 rounded-lg font-mono tracking-wider"
+                        className="bg-secondary border-2 border-border text-sm h-10 rounded-2xl font-mono tracking-wider"
                         required
                         autoFocus
                       />
