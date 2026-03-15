@@ -87,10 +87,26 @@ const ActivationPaywall = ({ affiliate, setAffiliate }: { affiliate: Affiliate; 
 
   const copyPix = async () => {
     if (!pixData) return;
-    await navigator.clipboard.writeText(pixData.qr_code);
-    setCopied(true);
-    toast({ title: "Código PIX copiado!" });
-    setTimeout(() => setCopied(false), 2500);
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(pixData.qr_code);
+      } else {
+        const textArea = document.createElement("textarea");
+        textArea.value = pixData.qr_code;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-9999px";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textArea);
+      }
+      setCopied(true);
+      toast({ title: "Código PIX copiado!" });
+      setTimeout(() => setCopied(false), 2500);
+    } catch {
+      toast({ title: "Erro ao copiar", description: "Copie manualmente o código acima.", variant: "destructive" });
+    }
   };
 
   if (status === "approved") {
