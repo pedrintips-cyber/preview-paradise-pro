@@ -63,11 +63,12 @@
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-body);
+    font-weight: 600;
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
-    letter-spacing: 0.05em;
+    letter-spacing: 0.02em;
   }
 }
 
