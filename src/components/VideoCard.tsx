@@ -75,13 +75,13 @@ const VideoCard = ({ video, index = 0 }: VideoCardProps) => {
         </Link>
 
         {/* Action buttons */}
-        <div className="flex gap-1.5 p-1.5">
-          <Link to={`/video/${video.id}`} className="flex-1">
+        <div className="flex gap-1 p-1.5">
+          <Link to={`/video/${video.id}`} className="flex-1 min-w-0">
             <Button
               size="sm"
-              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-[10px] font-bold h-8 rounded-xl shadow-[0_3px_0px_hsl(25_80%_40%)] active:shadow-none active:translate-y-[2px] transition-all"
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-[9px] font-bold h-7 rounded-lg shadow-[0_2px_0px_hsl(25_80%_40%)] active:shadow-none active:translate-y-[2px] transition-all px-1"
             >
-              <Play className="w-3 h-3 mr-1" />
+              <Play className="w-3 h-3 mr-0.5 flex-shrink-0" />
               Ver mais
             </Button>
           </Link>
@@ -91,9 +91,9 @@ const VideoCard = ({ video, index = 0 }: VideoCardProps) => {
               e.stopPropagation();
               openCheckout();
             }}
-            className="flex-1 bg-success hover:bg-success/90 text-success-foreground text-[10px] font-bold h-8 rounded-xl shadow-[0_3px_0px_hsl(145_50%_30%)] active:shadow-none active:translate-y-[2px] transition-all"
+            className="flex-1 min-w-0 bg-success hover:bg-success/90 text-success-foreground text-[9px] font-bold h-7 rounded-lg shadow-[0_2px_0px_hsl(145_50%_30%)] active:shadow-none active:translate-y-[2px] transition-all px-1"
           >
-            <ShoppingCart className="w-3 h-3 mr-1" />
+            <ShoppingCart className="w-3 h-3 mr-0.5 flex-shrink-0" />
             Assinar
           </Button>
         </div>
