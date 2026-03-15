@@ -29,7 +29,7 @@ const Navbar = () => {
           <button className="p-1.5 text-muted-foreground hover:text-foreground transition-colors">
             <Search className="w-4 h-4" />
           </button>
-          <Button onClick={openCheckout} size="sm" className="hidden sm:flex bg-primary text-primary-foreground hover:bg-primary/90 shadow-glow text-[10px] h-7 px-3">
+          <Button onClick={openCheckout} size="sm" className="hidden sm:flex bg-primary text-primary-foreground hover:bg-primary/90 shadow-cartoon text-[10px] h-8 px-4 rounded-full">
             <Crown className="w-3 h-3 mr-1" />
             VIP
           </Button>
