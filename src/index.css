@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Fredoka+One&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,49 +6,52 @@
 
 @layer base {
   :root {
-    --background: 0 0% 98%;
-    --foreground: 0 0% 10%;
+    --background: 30 30% 97%;
+    --foreground: 220 20% 20%;
 
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 10%;
+    --card-foreground: 220 20% 20%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 10%;
+    --popover-foreground: 220 20% 20%;
 
-    --primary: 25 95% 53%;
+    --primary: 25 100% 55%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 30 15% 93%;
-    --secondary-foreground: 0 0% 25%;
+    --secondary: 220 10% 92%;
+    --secondary-foreground: 220 20% 30%;
 
-    --muted: 30 10% 94%;
-    --muted-foreground: 0 0% 45%;
+    --muted: 30 15% 93%;
+    --muted-foreground: 220 10% 50%;
 
-    --accent: 25 95% 53%;
+    --accent: 25 100% 55%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 30 10% 88%;
-    --input: 30 10% 88%;
-    --ring: 25 95% 53%;
+    --border: 220 15% 87%;
+    --input: 220 15% 87%;
+    --ring: 25 100% 55%;
 
-    --radius: 0.75rem;
+    --radius: 1rem;
 
-    --gold: 25 95% 53%;
+    --gold: 25 100% 55%;
     --gold-foreground: 0 0% 100%;
 
-    --font-display: 'Bebas Neue', sans-serif;
-    --font-body: 'Inter', sans-serif;
+    --font-display: 'Fredoka One', cursive;
+    --font-body: 'Nunito', sans-serif;
 
-    --gradient-vip: linear-gradient(135deg, hsl(25 95% 53%), hsl(35 95% 45%));
-    --gradient-dark: linear-gradient(180deg, hsl(0 0% 98%) 0%, hsl(0 0% 95%) 100%);
-    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(0 0% 97%) 100%);
-    --gradient-red: linear-gradient(135deg, hsl(25 95% 53%), hsl(15 90% 45%));
-    --shadow-glow: 0 0 25px hsl(25 95% 53% / 0.2);
-    --shadow-gold: 0 0 20px hsl(25 95% 53% / 0.2);
-    --shadow-red: 0 0 30px hsl(25 95% 53% / 0.15);
+    --gradient-vip: linear-gradient(135deg, hsl(25 100% 55%), hsl(35 95% 50%));
+    --gradient-dark: linear-gradient(180deg, hsl(30 30% 97%) 0%, hsl(30 20% 94%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(30 15% 97%) 100%);
+    --gradient-red: linear-gradient(135deg, hsl(25 100% 55%), hsl(15 95% 48%));
+    --gradient-btn: linear-gradient(180deg, hsl(0 0% 98%) 0%, hsl(220 10% 88%) 100%);
+    --shadow-glow: 0 4px 20px hsl(25 100% 55% / 0.25);
+    --shadow-gold: 0 4px 16px hsl(25 100% 55% / 0.2);
+    --shadow-red: 0 4px 20px hsl(25 100% 55% / 0.15);
+    --shadow-cartoon: 0 4px 0px hsl(220 15% 80%), 0 6px 20px hsl(220 15% 50% / 0.1);
+    --shadow-card: 0 3px 0px hsl(220 15% 85%), 0 8px 24px hsl(220 15% 50% / 0.08);
   }
 }
 
@@ -60,11 +63,12 @@
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-body);
+    font-weight: 600;
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
-    letter-spacing: 0.05em;
+    letter-spacing: 0.02em;
   }
 }
 
@@ -99,6 +103,10 @@
     background: var(--gradient-red);
   }
 
+  .bg-gradient-btn {
+    background: var(--gradient-btn);
+  }
+
   .shadow-glow {
     box-shadow: var(--shadow-glow);
   }
@@ -109,6 +117,14 @@
 
   .shadow-red {
     box-shadow: var(--shadow-red);
+  }
+
+  .shadow-cartoon {
+    box-shadow: var(--shadow-cartoon);
+  }
+
+  .shadow-card {
+    box-shadow: var(--shadow-card);
   }
 
   .scrollbar-hide {

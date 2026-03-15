@@ -11,7 +11,7 @@ const Navbar = () => {
   const { openCheckout } = useCheckout();
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-xl border-b border-border">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-xl border-b-2 border-border shadow-card">
       <div className="flex items-center justify-between px-3 md:px-8 h-20 md:h-32">
         <Link to="/" className="flex items-center">
           <img src={logo} alt="Porn IDP" className="h-20 md:h-28 object-contain" />
@@ -29,7 +29,7 @@ const Navbar = () => {
           <button className="p-1.5 text-muted-foreground hover:text-foreground transition-colors">
             <Search className="w-4 h-4" />
           </button>
-          <Button onClick={openCheckout} size="sm" className="hidden sm:flex bg-primary text-primary-foreground hover:bg-primary/90 shadow-glow text-[10px] h-7 px-3">
+          <Button onClick={openCheckout} size="sm" className="hidden sm:flex bg-primary text-primary-foreground hover:bg-primary/90 shadow-cartoon text-[10px] h-8 px-4 rounded-full">
             <Crown className="w-3 h-3 mr-1" />
             VIP
           </Button>
@@ -40,13 +40,13 @@ const Navbar = () => {
       </div>
 
       {menuOpen && (
-        <div className="md:hidden bg-card border-b border-border px-3 pb-3">
+        <div className="md:hidden bg-card border-b-2 border-border px-3 pb-3 shadow-card">
           {categories.map((cat) => (
             <Link key={cat.id} to={`/categoria/${cat.slug}`} onClick={() => setMenuOpen(false)} className="block py-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
               {cat.name}
             </Link>
           ))}
-          <Button onClick={() => { openCheckout(); setMenuOpen(false); }} size="sm" className="w-full mt-2 bg-primary text-primary-foreground text-[10px] h-7">
+          <Button onClick={() => { openCheckout(); setMenuOpen(false); }} size="sm" className="w-full mt-2 bg-primary text-primary-foreground text-[10px] h-8 rounded-full shadow-cartoon">
             <Crown className="w-3 h-3 mr-1" />
             Seja VIP
           </Button>

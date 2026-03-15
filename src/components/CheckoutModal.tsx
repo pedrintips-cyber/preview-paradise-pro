@@ -150,7 +150,7 @@ const CheckoutModal = ({ plan, open, onClose }: CheckoutModalProps) => {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.92, y: 20 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="relative w-full max-w-[380px] bg-card border border-border rounded-2xl overflow-hidden shadow-2xl max-h-[92vh] overflow-y-auto"
+            className="relative w-full max-w-[380px] bg-card border-2 border-border rounded-3xl overflow-hidden shadow-2xl max-h-[92vh] overflow-y-auto"
           >
             {/* Close button */}
             <button
@@ -201,17 +201,17 @@ const CheckoutModal = ({ plan, open, onClose }: CheckoutModalProps) => {
             {/* Trust badges */}
             <div className="px-5 mb-3">
               <div className="grid grid-cols-3 gap-2">
-                <div className="flex flex-col items-center gap-1 py-2 px-1 rounded-lg bg-secondary/50 border border-border">
+                <div className="flex flex-col items-center gap-1 py-2 px-1 rounded-2xl bg-secondary/50 border-2 border-border shadow-card">
                   <ShieldCheck className="w-4 h-4 text-primary" />
-                  <span className="text-[8px] text-muted-foreground text-center leading-tight">Pagamento<br/>Seguro</span>
+                  <span className="text-[8px] text-muted-foreground text-center leading-tight font-bold">Pagamento<br/>Seguro</span>
                 </div>
-                <div className="flex flex-col items-center gap-1 py-2 px-1 rounded-lg bg-secondary/50 border border-border">
+                <div className="flex flex-col items-center gap-1 py-2 px-1 rounded-2xl bg-secondary/50 border-2 border-border shadow-card">
                   <Zap className="w-4 h-4 text-primary" />
-                  <span className="text-[8px] text-muted-foreground text-center leading-tight">Acesso<br/>Imediato</span>
+                  <span className="text-[8px] text-muted-foreground text-center leading-tight font-bold">Acesso<br/>Imediato</span>
                 </div>
-                <div className="flex flex-col items-center gap-1 py-2 px-1 rounded-lg bg-secondary/50 border border-border">
+                <div className="flex flex-col items-center gap-1 py-2 px-1 rounded-2xl bg-secondary/50 border-2 border-border shadow-card">
                   <Users className="w-4 h-4 text-primary" />
-                  <span className="text-[8px] text-muted-foreground text-center leading-tight">+10.000<br/>Membros</span>
+                  <span className="text-[8px] text-muted-foreground text-center leading-tight font-bold">+10.000<br/>Membros</span>
                 </div>
               </div>
             </div>
@@ -234,14 +234,14 @@ const CheckoutModal = ({ plan, open, onClose }: CheckoutModalProps) => {
                         value={formatCpf(cpf)}
                         onChange={(e) => setCpf(e.target.value.replace(/\D/g, "").slice(0, 11))}
                         placeholder="000.000.000-00"
-                        className="bg-secondary border-border text-sm h-10 rounded-lg font-mono tracking-wider"
+                        className="bg-secondary border-2 border-border text-sm h-10 rounded-2xl font-mono tracking-wider"
                         required
                         autoFocus
                       />
                     </div>
 
                     {/* Payment method indicator */}
-                    <div className="flex items-center gap-2 py-2 px-3 rounded-lg bg-secondary/50 border border-border">
+                    <div className="flex items-center gap-2 py-2 px-3 rounded-2xl bg-secondary/50 border-2 border-border">
                       <QrCode className="w-4 h-4 text-primary flex-shrink-0" />
                       <div>
                         <p className="text-[11px] text-foreground font-medium">Pagamento via PIX</p>
@@ -253,7 +253,7 @@ const CheckoutModal = ({ plan, open, onClose }: CheckoutModalProps) => {
                     <Button
                       type="submit"
                       disabled={submitting}
-                      className="w-full bg-primary text-primary-foreground hover:bg-primary/90 text-sm h-11 font-bold rounded-xl"
+                      className="w-full bg-primary text-primary-foreground hover:bg-primary/90 text-sm h-12 font-bold rounded-full shadow-cartoon active:translate-y-[1px]"
                     >
                       {submitting ? (
                         <>
@@ -269,7 +269,7 @@ const CheckoutModal = ({ plan, open, onClose }: CheckoutModalProps) => {
                     </Button>
 
                     {/* Guarantee seal */}
-                    <div className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg border border-primary/20 bg-primary/5">
+                    <div className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-2xl border-2 border-primary/20 bg-primary/5">
                       <div className="flex-shrink-0">
                         <div className="w-8 h-8 rounded-full border-2 border-primary/40 flex items-center justify-center">
                           <ShieldCheck className="w-4 h-4 text-primary" />

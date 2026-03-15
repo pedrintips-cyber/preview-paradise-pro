@@ -42,7 +42,7 @@ const CategoryBar = () => {
             transition={{ duration: 0.3, delay: i * 0.05 }}
           >
             <Link to={`/categoria/${cat.slug}`} className="flex-shrink-0 group block">
-              <div className="relative w-24 h-32 md:w-40 md:h-52 rounded-xl overflow-hidden border-2 border-border/50 group-hover:border-primary/60 transition-all duration-300 group-hover:shadow-red">
+              <div className="relative w-24 h-32 md:w-40 md:h-52 rounded-2xl overflow-hidden border-2 border-border group-hover:border-primary/60 transition-all duration-300 shadow-card group-hover:-translate-y-1 group-hover:shadow-glow">
                 <img
                   src={cat.image_url}
                   alt={cat.name}

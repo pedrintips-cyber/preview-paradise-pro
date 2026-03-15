@@ -89,12 +89,12 @@ const HeroBanner = () => {
               {banner.subtitle}
             </p>
             <div className="flex gap-2.5">
-              <Button className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-glow text-xs md:text-sm h-9 md:h-11 px-4 md:px-6 rounded-lg font-semibold">
+              <Button className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-cartoon text-xs md:text-sm h-10 md:h-12 px-5 md:px-7 rounded-full font-bold active:translate-y-[1px]">
                 <Play className="w-4 h-4 mr-1.5" fill="currentColor" />
                 Assistir
               </Button>
               {banner.is_vip && (
-                <Button onClick={openCheckout} variant="outline" className="border-primary/40 text-primary hover:bg-primary/10 text-xs md:text-sm h-9 md:h-11 px-4 md:px-6 rounded-lg font-semibold">
+                <Button onClick={openCheckout} variant="outline" className="border-2 border-primary/40 text-primary hover:bg-primary/10 text-xs md:text-sm h-10 md:h-12 px-5 md:px-7 rounded-full font-bold shadow-cartoon">
                   <Crown className="w-4 h-4 mr-1.5" />
                   Seja VIP
                 </Button>
@@ -107,10 +107,10 @@ const HeroBanner = () => {
       {/* Navigation arrows */}
       {banners.length > 1 && (
         <>
-          <button onClick={prev} className="absolute left-2 top-1/2 -translate-y-1/2 z-10 p-2 md:p-3 rounded-full bg-background/40 hover:bg-background/70 backdrop-blur-sm text-foreground transition-all border border-border/30">
+          <button onClick={prev} className="absolute left-2 top-1/2 -translate-y-1/2 z-10 p-2 md:p-3 rounded-full bg-card/80 hover:bg-card backdrop-blur-sm text-foreground transition-all border-2 border-border shadow-cartoon active:translate-y-[1px] active:shadow-none">
             <ChevronLeft className="w-4 h-4 md:w-5 md:h-5" />
           </button>
-          <button onClick={next} className="absolute right-2 top-1/2 -translate-y-1/2 z-10 p-2 md:p-3 rounded-full bg-background/40 hover:bg-background/70 backdrop-blur-sm text-foreground transition-all border border-border/30">
+          <button onClick={next} className="absolute right-2 top-1/2 -translate-y-1/2 z-10 p-2 md:p-3 rounded-full bg-card/80 hover:bg-card backdrop-blur-sm text-foreground transition-all border-2 border-border shadow-cartoon active:translate-y-[1px] active:shadow-none">
             <ChevronRight className="w-4 h-4 md:w-5 md:h-5" />
           </button>
           {/* Dots */}
