@@ -55,7 +55,7 @@ const VideoCard = ({ video, index = 0 }: VideoCardProps) => {
             <h3 className="font-body font-medium text-[11px] text-background line-clamp-2 leading-snug mb-1">
               {video.title}
             </h3>
-            <div className="flex items-center gap-1 text-primary-foreground/60 text-[9px]">
+            <div className="flex items-center gap-1 text-background/60 text-[9px]">
               <Eye className="w-2.5 h-2.5" />
               <span>{formatViews(video.views || 0)}</span>
               {video.duration && (
