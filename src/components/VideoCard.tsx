@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Crown, Eye, Play, ShoppingCart } from "lucide-react";
+import { Crown, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCheckout } from "@/contexts/CheckoutContext";
 import type { DBVideo } from "@/types/database";
@@ -75,13 +75,12 @@ const VideoCard = ({ video, index = 0 }: VideoCardProps) => {
         </Link>
 
         {/* Action buttons */}
-        <div className="flex gap-1 p-1.5">
+        <div className="flex gap-1.5 p-1.5">
           <Link to={`/video/${video.id}`} className="flex-1 min-w-0">
             <Button
               size="sm"
-              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-[9px] font-bold h-7 rounded-lg shadow-[0_2px_0px_hsl(25_80%_40%)] active:shadow-none active:translate-y-[2px] transition-all px-1"
+              className="w-full h-8 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 text-[10px] font-semibold px-2 whitespace-nowrap truncate"
             >
-              <Play className="w-3 h-3 mr-0.5 flex-shrink-0" />
               Ver mais
             </Button>
           </Link>
@@ -91,9 +90,8 @@ const VideoCard = ({ video, index = 0 }: VideoCardProps) => {
               e.stopPropagation();
               openCheckout();
             }}
-            className="flex-1 min-w-0 bg-success hover:bg-success/90 text-success-foreground text-[9px] font-bold h-7 rounded-lg shadow-[0_2px_0px_hsl(145_50%_30%)] active:shadow-none active:translate-y-[2px] transition-all px-1"
+            className="flex-1 min-w-0 h-8 rounded-lg bg-success text-success-foreground hover:bg-success/90 text-[10px] font-semibold px-2 whitespace-nowrap truncate"
           >
-            <ShoppingCart className="w-3 h-3 mr-0.5 flex-shrink-0" />
             Assinar
           </Button>
         </div>
