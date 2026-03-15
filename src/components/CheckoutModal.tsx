@@ -253,7 +253,7 @@ const CheckoutModal = ({ plan, open, onClose }: CheckoutModalProps) => {
                     <Button
                       type="submit"
                       disabled={submitting}
-                      className="w-full bg-primary text-primary-foreground hover:bg-primary/90 text-sm h-11 font-bold rounded-xl"
+                      className="w-full bg-primary text-primary-foreground hover:bg-primary/90 text-sm h-12 font-bold rounded-full shadow-cartoon active:translate-y-[1px]"
                     >
                       {submitting ? (
                         <>
