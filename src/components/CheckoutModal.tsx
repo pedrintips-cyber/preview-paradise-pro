@@ -140,7 +140,7 @@ const CheckoutModal = ({ plan, open, onClose }: CheckoutModalProps) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-black/85 backdrop-blur-sm"
+            className="absolute inset-0 bg-foreground/85 backdrop-blur-sm"
             onClick={handleClose}
           />
 
