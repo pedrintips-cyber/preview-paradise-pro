@@ -13,7 +13,7 @@ interface Purchase {
   plan_id: string | null;
 }
 
-type SalesPeriod = "7d" | "30d" | "all";
+type SalesPeriod = "1d" | "7d" | "30d" | "all";
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState({ totalViews: 0, vipClicks: 0, purchases: 0, totalVideos: 0, totalRevenue: 0, approvedSales: 0 });
@@ -83,7 +83,8 @@ const AdminDashboard = () => {
   };
 
   const loadSalesChart = async () => {
-    let daysBack = 7;
+    let daysBack = 1;
+    if (salesPeriod === "7d") daysBack = 7;
     if (salesPeriod === "30d") daysBack = 30;
     if (salesPeriod === "all") daysBack = 365;
 
@@ -99,22 +100,37 @@ const AdminDashboard = () => {
 
     const chartMap: Record<string, { revenue: number; count: number }> = {};
     
-    const displayDays = salesPeriod === "all" ? 30 : daysBack;
-    for (let i = displayDays - 1; i >= 0; i--) {
-      const d = new Date();
-      d.setDate(d.getDate() - i);
-      const key = d.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
-      chartMap[key] = { revenue: 0, count: 0 };
-    }
-
-    purchasesData?.forEach((row) => {
-      const d = new Date(row.created_at!);
-      const key = d.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
-      if (chartMap[key] !== undefined) {
-        chartMap[key].revenue += row.amount / 100;
-        chartMap[key].count += 1;
+    if (salesPeriod === "1d") {
+      // Hourly breakdown for today
+      for (let h = 0; h < 24; h++) {
+        const key = `${h.toString().padStart(2, "0")}h`;
+        chartMap[key] = { revenue: 0, count: 0 };
       }
-    });
+      purchasesData?.forEach((row) => {
+        const d = new Date(row.created_at!);
+        const key = `${d.getHours().toString().padStart(2, "0")}h`;
+        if (chartMap[key] !== undefined) {
+          chartMap[key].revenue += row.amount / 100;
+          chartMap[key].count += 1;
+        }
+      });
+    } else {
+      const displayDays = salesPeriod === "all" ? 30 : daysBack;
+      for (let i = displayDays - 1; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        const key = d.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
+        chartMap[key] = { revenue: 0, count: 0 };
+      }
+      purchasesData?.forEach((row) => {
+        const d = new Date(row.created_at!);
+        const key = d.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
+        if (chartMap[key] !== undefined) {
+          chartMap[key].revenue += row.amount / 100;
+          chartMap[key].count += 1;
+        }
+      });
+    }
 
     setSalesChart(Object.entries(chartMap).map(([date, data]) => ({ date, ...data })));
   };
@@ -177,7 +193,7 @@ const AdminDashboard = () => {
               Vendas
             </h3>
             <div className="flex gap-1">
-              {(["7d", "30d", "all"] as SalesPeriod[]).map((p) => (
+              {(["1d", "7d", "30d", "all"] as SalesPeriod[]).map((p) => (
                 <button
                   key={p}
                   onClick={() => setSalesPeriod(p)}
@@ -187,7 +203,7 @@ const AdminDashboard = () => {
                       : "bg-secondary text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  {p === "7d" ? "7 dias" : p === "30d" ? "30 dias" : "Tudo"}
+                  {p === "1d" ? "Diário" : p === "7d" ? "Semanal" : p === "30d" ? "Mensal" : "Tudo"}
                 </button>
               ))}
             </div>
