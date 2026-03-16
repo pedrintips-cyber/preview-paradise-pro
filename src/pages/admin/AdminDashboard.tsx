@@ -193,7 +193,7 @@ const AdminDashboard = () => {
               Vendas
             </h3>
             <div className="flex gap-1">
-              {(["7d", "30d", "all"] as SalesPeriod[]).map((p) => (
+              {(["1d", "7d", "30d", "all"] as SalesPeriod[]).map((p) => (
                 <button
                   key={p}
                   onClick={() => setSalesPeriod(p)}
@@ -203,7 +203,7 @@ const AdminDashboard = () => {
                       : "bg-secondary text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  {p === "7d" ? "7 dias" : p === "30d" ? "30 dias" : "Tudo"}
+                  {p === "1d" ? "Diário" : p === "7d" ? "Semanal" : p === "30d" ? "Mensal" : "Tudo"}
                 </button>
               ))}
             </div>
