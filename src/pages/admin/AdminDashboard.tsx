@@ -13,7 +13,7 @@ interface Purchase {
   plan_id: string | null;
 }
 
-type SalesPeriod = "7d" | "30d" | "all";
+type SalesPeriod = "1d" | "7d" | "30d" | "all";
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState({ totalViews: 0, vipClicks: 0, purchases: 0, totalVideos: 0, totalRevenue: 0, approvedSales: 0 });
