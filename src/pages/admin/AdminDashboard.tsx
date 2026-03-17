@@ -16,7 +16,9 @@ interface Purchase {
 type SalesPeriod = "1d" | "7d" | "30d" | "all";
 
 const AdminDashboard = () => {
-  const [stats, setStats] = useState({ totalViews: 0, vipClicks: 0, purchases: 0, totalVideos: 0, totalRevenue: 0, approvedSales: 0 });
+  const [stats, setStats] = useState({ totalViews: 0, vipClicks: 0, purchases: 0, totalVideos: 0 });
+  const [periodRevenue, setPeriodRevenue] = useState(0);
+  const [periodSalesCount, setPeriodSalesCount] = useState(0);
   const [viewsChart, setViewsChart] = useState<{ date: string; views: number }[]>([]);
   const [salesChart, setSalesChart] = useState<{ date: string; revenue: number; count: number }[]>([]);
   const [recentSales, setRecentSales] = useState<Purchase[]>([]);
@@ -32,24 +34,19 @@ const AdminDashboard = () => {
   }, [salesPeriod]);
 
   const loadData = async () => {
-    const [viewsRes, clicksRes, purchasesRes, videosRes, salesRes, recentRes] = await Promise.all([
+    const [viewsRes, clicksRes, purchasesRes, videosRes, recentRes] = await Promise.all([
       supabase.from("analytics").select("id", { count: "exact" }).eq("event_type", "view"),
       supabase.from("analytics").select("id", { count: "exact" }).eq("event_type", "vip_click"),
       supabase.from("purchases").select("id", { count: "exact" }),
       supabase.from("videos").select("id", { count: "exact" }),
-      supabase.from("purchases").select("amount, status").eq("status", "approved"),
       supabase.from("purchases").select("*").order("created_at", { ascending: false }).limit(20),
     ]);
-
-    const totalRevenue = (salesRes.data || []).reduce((sum, p) => sum + (p.amount / 100), 0);
 
     setStats({
       totalViews: viewsRes.count || 0,
       vipClicks: clicksRes.count || 0,
       purchases: purchasesRes.count || 0,
       totalVideos: videosRes.count || 0,
-      totalRevenue,
-      approvedSales: salesRes.data?.length || 0,
     });
 
     setRecentSales((recentRes.data as Purchase[]) || []);
