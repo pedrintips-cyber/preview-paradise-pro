@@ -16,7 +16,9 @@ interface Purchase {
 type SalesPeriod = "1d" | "7d" | "30d" | "all";
 
 const AdminDashboard = () => {
-  const [stats, setStats] = useState({ totalViews: 0, vipClicks: 0, purchases: 0, totalVideos: 0, totalRevenue: 0, approvedSales: 0 });
+  const [stats, setStats] = useState({ totalViews: 0, vipClicks: 0, purchases: 0, totalVideos: 0 });
+  const [periodRevenue, setPeriodRevenue] = useState(0);
+  const [periodSalesCount, setPeriodSalesCount] = useState(0);
   const [viewsChart, setViewsChart] = useState<{ date: string; views: number }[]>([]);
   const [salesChart, setSalesChart] = useState<{ date: string; revenue: number; count: number }[]>([]);
   const [recentSales, setRecentSales] = useState<Purchase[]>([]);
@@ -32,24 +34,19 @@ const AdminDashboard = () => {
   }, [salesPeriod]);
 
   const loadData = async () => {
-    const [viewsRes, clicksRes, purchasesRes, videosRes, salesRes, recentRes] = await Promise.all([
+    const [viewsRes, clicksRes, purchasesRes, videosRes, recentRes] = await Promise.all([
       supabase.from("analytics").select("id", { count: "exact" }).eq("event_type", "view"),
       supabase.from("analytics").select("id", { count: "exact" }).eq("event_type", "vip_click"),
       supabase.from("purchases").select("id", { count: "exact" }),
       supabase.from("videos").select("id", { count: "exact" }),
-      supabase.from("purchases").select("amount, status").eq("status", "approved"),
       supabase.from("purchases").select("*").order("created_at", { ascending: false }).limit(20),
     ]);
-
-    const totalRevenue = (salesRes.data || []).reduce((sum, p) => sum + (p.amount / 100), 0);
 
     setStats({
       totalViews: viewsRes.count || 0,
       vipClicks: clicksRes.count || 0,
       purchases: purchasesRes.count || 0,
       totalVideos: videosRes.count || 0,
-      totalRevenue,
-      approvedSales: salesRes.data?.length || 0,
     });
 
     setRecentSales((recentRes.data as Purchase[]) || []);
@@ -98,10 +95,14 @@ const AdminDashboard = () => {
       .gte("created_at", startDate.toISOString())
       .order("created_at");
 
+    // Calculate period totals
+    const totalRev = (purchasesData || []).reduce((sum, p) => sum + (p.amount / 100), 0);
+    setPeriodRevenue(totalRev);
+    setPeriodSalesCount(purchasesData?.length || 0);
+
     const chartMap: Record<string, { revenue: number; count: number }> = {};
     
     if (salesPeriod === "1d") {
-      // Hourly breakdown for today
       for (let h = 0; h < 24; h++) {
         const key = `${h.toString().padStart(2, "0")}h`;
         chartMap[key] = { revenue: 0, count: 0 };
@@ -157,9 +158,11 @@ const AdminDashboard = () => {
 
   if (loading) return <div className="flex justify-center py-12"><div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" /></div>;
 
+  const periodLabel = salesPeriod === "1d" ? "Hoje" : salesPeriod === "7d" ? "Semanal" : salesPeriod === "30d" ? "Mensal" : "Total";
+  
   const statCards = [
-    { label: "Receita Total", value: formatCurrency(stats.totalRevenue), icon: DollarSign, color: "text-green-400" },
-    { label: "Vendas Aprovadas", value: stats.approvedSales, icon: TrendingUp, color: "text-green-400" },
+    { label: `Receita (${periodLabel})`, value: formatCurrency(periodRevenue), icon: DollarSign, color: "text-green-400" },
+    { label: `Vendas (${periodLabel})`, value: periodSalesCount, icon: TrendingUp, color: "text-green-400" },
     { label: "Visualizações", value: stats.totalViews, icon: Eye, color: "text-blue-400" },
     { label: "Cliques VIP", value: stats.vipClicks, icon: Crown, color: "text-primary" },
     { label: "Total Compras", value: stats.purchases, icon: TrendingUp, color: "text-yellow-400" },
