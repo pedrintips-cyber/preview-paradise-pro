@@ -95,10 +95,14 @@ const AdminDashboard = () => {
       .gte("created_at", startDate.toISOString())
       .order("created_at");
 
+    // Calculate period totals
+    const totalRev = (purchasesData || []).reduce((sum, p) => sum + (p.amount / 100), 0);
+    setPeriodRevenue(totalRev);
+    setPeriodSalesCount(purchasesData?.length || 0);
+
     const chartMap: Record<string, { revenue: number; count: number }> = {};
     
     if (salesPeriod === "1d") {
-      // Hourly breakdown for today
       for (let h = 0; h < 24; h++) {
         const key = `${h.toString().padStart(2, "0")}h`;
         chartMap[key] = { revenue: 0, count: 0 };
