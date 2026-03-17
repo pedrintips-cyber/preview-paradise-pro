@@ -158,9 +158,11 @@ const AdminDashboard = () => {
 
   if (loading) return <div className="flex justify-center py-12"><div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" /></div>;
 
+  const periodLabel = salesPeriod === "1d" ? "Hoje" : salesPeriod === "7d" ? "Semanal" : salesPeriod === "30d" ? "Mensal" : "Total";
+  
   const statCards = [
-    { label: "Receita Total", value: formatCurrency(stats.totalRevenue), icon: DollarSign, color: "text-green-400" },
-    { label: "Vendas Aprovadas", value: stats.approvedSales, icon: TrendingUp, color: "text-green-400" },
+    { label: `Receita (${periodLabel})`, value: formatCurrency(periodRevenue), icon: DollarSign, color: "text-green-400" },
+    { label: `Vendas (${periodLabel})`, value: periodSalesCount, icon: TrendingUp, color: "text-green-400" },
     { label: "Visualizações", value: stats.totalViews, icon: Eye, color: "text-blue-400" },
     { label: "Cliques VIP", value: stats.vipClicks, icon: Crown, color: "text-primary" },
     { label: "Total Compras", value: stats.purchases, icon: TrendingUp, color: "text-yellow-400" },
