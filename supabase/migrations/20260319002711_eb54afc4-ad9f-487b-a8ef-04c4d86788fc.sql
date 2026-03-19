@@ -1,0 +1,1 @@
+UPDATE purchases SET created_at = created_at + interval '2 days' WHERE status = 'approved';
